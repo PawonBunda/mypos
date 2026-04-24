@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Manajemen Produk PRO</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: #f4f6f9;
+  color: #333;
+}
+
+/* HEADER BUTTON */
+button{
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #4a90e2;
+  color: white;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+button:hover{
+  background: #357bd8;
+}
+
+button:active{
+  transform: scale(0.97);
+}
+
+/* INPUT FORM */
+input{
+  margin: 6px 0;
+  padding: 8px 10px;
+  width: 260px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  transition: 0.2s;
+}
+
+input:focus{
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74,144,226,0.3);
+}
+
+/* CARD FORM INPUT */
+h2{
+  margin-top: 20px;
+  color: #333;
+}
+
+/* WRAPPER FORM BIAR LEBIH RAPI */
+form, body > input, body > button{
+  display: block;
+}
+
+/* TABLE MODERN */
+table{
+  width: 100%;
+  margin-top: 15px;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+/* HEADER */
+th{
+  background: #4a90e2;
+  color: white;
+  padding: 8px;
+  font-size: 12px;
+}
+
+/* CELL COMPACT */
+td{
+  padding: 6px 6px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+/* ROW HEIGHT MINIMAL */
+tr{
+  height: 30px;
+}
+
+/* HOVER HALUS */
+tr:hover{
+  background: #f5f9ff;
+}
+
+/* BUTTON DI TABLE LEBIH KECIL */
+td button{
+  padding: 4px 6px;
+  font-size: 11px;
+  border-radius: 5px;
+}
+
+tbody tr:nth-child(odd){
+  background: #ffffff;
+}
+
+tbody tr:nth-child(even){
+  background: #f6f9ff;
+}
+
+/* biar hover tetap lebih jelas */
+tbody tr:hover{
+  background: #eaf2ff;
+}
+
+tbody tr{
+  transition: 0.2s;
+}
+
+/* POPUP */
+#popup, #loading{
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+/* BACKDROP POPUP */
+#popup{
+  background: rgba(0,0,0,0.5);
+}
+
+/* BOX EDIT */
+#popupBox{
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 320px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  animation: pop 0.2s ease;
+}
+
+/* ANIMASI POPUP */
+@keyframes pop{
+  from{transform: scale(0.9); opacity: 0;}
+  to{transform: scale(1); opacity: 1;}
+}
+
+/* LOADING */
+#loading{
+  background: rgba(0,0,0,0.4);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* SCROLL HALUS TABLE DI HP */
+@media (max-width: 768px){
+  table{
+    font-size: 12px;
+  }
+
+  input{
+    width: 100%;
+  }
+}
+
+.formBar{
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  background: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
+.formBar input{
+  flex: 1;
+  min-width: 120px;
+  margin: 0;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.formBar button{
+  white-space: nowrap;
+}
+
+.stok-red{
+  background: #ffe5e5 !important;
+  color: #c0392b;
+  font-weight: bold;
+}
+
+.stok-yellow{
+  background: #fff8db !important;
+  color: #b8860b;
+  font-weight: bold;
+}
+
+@keyframes blink {
+  50% { opacity: 0.4; }
+}
+
+.stok-red{
+  animation: blink 1s infinite;
+}
+
+.filterButtons{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* hanya tombol filter ini saja */
+.filter-btn{
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+/* warna spesifik */
+.filter-btn.red{
+  background: #e74c3c;
+  color: white;
+}
+
+.filter-btn.yellow{
+  background: #f1c40f;
+  color: #000;
+}
+
+.filter-btn.white{
+  background: #ffffff;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+/* hover efek */
+.filter-btn:hover{
+  transform: scale(1.1);
+}
+
+/* klik efek */
+.filter-btn:active{
+  transform: scale(0.95);
+}
+
+#toast{
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  min-width: 280px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  transform: translateY(30px);
+  opacity: 0;
+  transition: 0.3s ease;
+  z-index: 9999;
+}
+
+#toast.show{
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast-success{ background: #27ae60; }
+.toast-error{ background: #e74c3c; }
+.toast-info{ background: #3498db; }
+
+</style>
+</head>
+
+<body>
+
+<button onclick="window.location.href='index.html'">
+  🧾 Halaman Kasir
+</button>
+
+<h2>➕ Tambah / Update Produk</h2>
+
+<div id="infoProduk" style="
+  margin-top:8px;
+  padding:10px 12px;
+  background:#ffffff;
+  border-radius:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+  font-size:13px;
+  color:#444;
+  display:none;
+"></div>
+
+<div class="formBar">
+
+  <div style="display:flex; gap:6px; align-items:center;">
+  <input id="barcodeBaru" placeholder="Barcode" style="flex:1;">
+  <button type="button" onclick="resetBarcode()">↺</button>
+</div>
+  <input id="namaBaru" placeholder="Nama Produk">
+  <input id="hargaBaru" type="text" placeholder="Harga">
+  <input id="stokBaru" type="number" placeholder="Stok (opsional)">
+
+  <button id="btnSimpan" onclick="tambahProduk()">Simpan</button>
+
+</div>
+
+<h2>📦 Daftar Produk</h2>
+
+<div class="searchBar">
+  <div class="filterButtons">
+  <input id="searchProduk" placeholder="🔍 Cari Produk" oninput="filterProduk()">
+  <button class="filter-btn red" onclick="filterHabis()">🔴</button>
+  <button class="filter-btn yellow" onclick="filterHampir()">🟡</button>
+  <button class="filter-btn white" onclick="filterClear()">⚪</button>
+
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Barcode</th>
+<th>Nama</th>
+<th>Harga</th>
+<th>Stok</th>
+<th>Aksi</th>
+</tr>
+</thead>
+<tbody id="bodyProduk"></tbody>
+</table>
+
+<!-- POPUP EDIT -->
+<div id="popup">
+  <div id="popupBox">
+    <h3>Edit Produk</h3>
+
+    <input id="e_barcode"><br>
+    <input id="e_nama"><br>
+    <input id="e_harga" type="text"><br>
+
+    <br>
+    <button onclick="simpanEdit()">Simpan</button>
+    <button onclick="popup.style.display='none'">Batal</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading">⏳ Menyimpan data...</div>
+
+<script>
+
+const barcodeBaru = document.getElementById("barcodeBaru");
+const namaBaru = document.getElementById("namaBaru");
+const hargaBaru = document.getElementById("hargaBaru");
+const stokBaru = document.getElementById("stokBaru");
+const popup = document.getElementById("popup");
+
+const URL="https://script.google.com/macros/s/AKfycbzb5HFyCTAH8PfCzx6DlKwh_2-eviTC-INEtq_yTDyHevcxkSepYH-pODcprq_NAaXYug/exec";
+
+let semuaProduk=[];
+let barcodeEdit="";
+
+function rupiah(a){
+  return "Rp "+Number(a).toLocaleString("id-ID");
+}
+
+// ================= LOAD PRODUK =================
+function loadProduk(){
+ fetch(URL)
+ .then(r=>r.json())
+ .then(data=>{
+   semuaProduk=data;
+   bodyProduk.innerHTML="";
+
+   data.forEach(p=>{
+
+  let stok = Number(p.jumlah_stok || 0);
+
+  let warna = "";
+
+  if(stok <= 0){
+    warna = "stok-red";
+  } 
+  else if(stok <= 2){
+    warna = "stok-yellow";
+  }
+
+  bodyProduk.innerHTML += `
+  <tr class="${warna}">
+    <td>${p.barcode}</td>
+    <td>${p.nama_produk}</td>
+    <td>${rupiah(p.harga || p.harga_jual || p.harga_produk)}</td>
+    <td>${stok}</td>
+    <td><button onclick="bukaEdit('${p.barcode}')">Edit</button></td>
+  </tr>`;
+    });
+ });
+}
+loadProduk();
+window.onload = function(){
+  fokusBarcode();
+};
+
+// ================= AUTO DETECT BARCODE =================
+barcodeBaru.addEventListener("change", autoDetectBarcode);
+barcodeBaru.addEventListener("keydown", function(e){
+  if(e.key==="Enter") autoDetectBarcode();
+});
+
+function autoDetectBarcode(){
+
+  let kode = barcodeBaru.value.trim();
+  if(!kode) return;
+
+  let p = semuaProduk.find(x=>x.barcode==kode);
+
+  if(p){
+  tampilInfoProduk(p);
+    // isi otomatis (biar terlihat datanya)
+    namaBaru.value = p.nama_produk;
+    hargaBaru.value = "Rp " + new Intl.NumberFormat("id-ID").format(p.harga);
+
+    stokBaru.value = "";
+    stokBaru.focus();   // 🔥 langsung ke stok
+  } 
+  else {
+  tampilInfoProduk(null);
+    namaBaru.value="";
+    hargaBaru.value="";
+    stokBaru.value="";
+    namaBaru.focus();   // produk baru
+  }
+}
+
+// ================= TAMBAH / UPDATE =================
+let modeSimpan = ""; // "stok" | "baru"
+function tambahProduk(){
+
+ if(!barcodeBaru.value){
+   return showToast("Barcode kosong!","error");
+ }
+
+ let kode = barcodeBaru.value.trim();
+ let p = semuaProduk.find(x=>x.barcode==kode);
+
+ btnSimpan.disabled = true;
+ loading.style.display = "flex";
+
+ // ===== MODE TAMBAH STOK (barcode sudah ada) =====
+ if(p){
+   modeSimpan = "stok";
+   fetch(URL,{
+     method:"POST",
+     body:JSON.stringify({
+       action:"tambahStok",
+       barcode:kode,
+       tambah_stok: Number(stokBaru.value || 0)
+     })
+   })
+   .then(selesaiSimpan)
+   .catch(gagalSimpan);
+
+ } 
+ // ===== MODE PRODUK BARU =====
+ else{
+   modeSimpan = "baru";
+
+   if(!namaBaru.value || !hargaBaru.value){
+     return showToast("Lengkapi data produk baru!","error");
+   }
+
+   fetch(URL,{
+     method:"POST",
+     body:JSON.stringify({
+       action:"tambahProduk",
+       barcode:kode,
+       nama_produk:namaBaru.value.trim(),
+       harga: ambilAngkaRupiah(hargaBaru.value),
+       jumlah_stok:Number(stokBaru.value || 0)
+     })
+   })
+   .then(selesaiSimpan)
+   .catch(gagalSimpan);
+ }
+
+ function selesaiSimpan(){
+  btnSimpan.disabled = false;
+  loading.style.display = "none";
+
+  barcodeBaru.value="";
+  namaBaru.value="";
+  hargaBaru.value="";
+  stokBaru.value="";
+
+  tampilInfoProduk(null);
+  loadProduk();
+  fokusBarcode();
+
+  if(modeSimpan === "stok"){
+  showToast("Stok berhasil ditambahkan ✅","success");
+}else if(modeSimpan === "baru"){
+  showToast("Produk baru berhasil ditambahkan ✅","success");
+}
+
+  modeSimpan = "";
+}
+
+ function gagalSimpan(){
+   btnSimpan.disabled = false;
+   loading.style.display = "none";
+   showToast("Gagal menyimpan data ❌","error");
+ }
+}
+
+// ================= EDIT =================
+function bukaEdit(barcode){
+
+ let p = semuaProduk.find(x=>x.barcode==barcode);
+ barcodeEdit = barcode;
+
+ stokEdit = p.jumlah_stok || 0;
+
+ e_barcode.value = p.barcode;
+ e_nama.value = p.nama_produk;
+ e_harga.value = "Rp " + new Intl.NumberFormat("id-ID").format(p.harga);
+
+ popup.style.display="flex";
+
+ setTimeout(()=> e_nama.focus(), 100);
+}
+
+function filterProduk(){
+  let q = searchProduk.value.toLowerCase().trim();
+
+  let rows = document.querySelectorAll("#bodyProduk tr");
+
+  rows.forEach(row => {
+
+    let teks = row.innerText.toLowerCase();
+
+    // ambil stok dari kolom ke-4 (index 3)
+    let stok = parseInt(row.children[3].innerText);
+
+    let match = false;
+
+    // 🔍 search normal
+    if(teks.includes(q)){
+      match = true;
+    }
+
+    // 🔴 filter stok habis
+    if(q === "habis" && stok <= 0){
+      match = true;
+    }
+
+    // 🟡 filter stok hampir habis
+    if((q === "hampir" || q === "rendah") && stok > 0 && stok <= 2){
+      match = true;
+    }
+
+    // tampil / sembunyi
+    row.style.display = match ? "" : "none";
+  });
+}
+
+function filterHabis(){
+  let rows = document.querySelectorAll("#bodyProduk tr");
+
+  rows.forEach(row=>{
+    let stok = parseInt(row.children[3].innerText);
+    row.style.display = stok <= 0 ? "" : "none";
+  });
+}
+
+function filterHampir(){
+  let rows = document.querySelectorAll("#bodyProduk tr");
+
+  rows.forEach(row=>{
+    let stok = parseInt(row.children[3].innerText);
+    row.style.display = (stok > 0 && stok <= 2) ? "" : "none";
+  });
+}
+
+function filterClear(){
+  let rows = document.querySelectorAll("#bodyProduk tr");
+
+  rows.forEach(row=>{
+    row.style.display = "";
+  });
+
+  searchProduk.value = "";
+}
+
+function simpanEdit(){
+
+ loading.style.display = "flex";
+
+ fetch(URL,{
+   method:"POST",
+   body:JSON.stringify({
+     action:"editProduk",
+     barcodeLama:barcodeEdit,
+     barcodeBaru:e_barcode.value,
+     nama_produk:e_nama.value,
+     harga: ambilAngkaRupiah(e_harga.value),
+
+     // 🔥 PENTING: kirim stok lama
+     jumlah_stok: stokEdit
+   })
+ })
+ .then(()=>{
+  loading.style.display="none";
+  popup.style.display="none";
+  loadProduk();
+  showToast("Data produk berhasil diupdate ✅","success");
+  fokusBarcode();
+})
+ .catch(()=>{
+   loading.style.display="none";
+   alert("❌ Gagal menyimpan");
+ });
+}
+
+e_nama.addEventListener("input", function () {
+  this.value = this.value
+    .toLowerCase()
+    .replace(/\b\w/g, c => c.toUpperCase());
+});
+
+namaBaru.addEventListener("input", function () {
+  this.value = this.value
+    .toLowerCase()
+    .replace(/\s+/g, " ") // rapikan spasi ganda jadi 1
+    .replace(/\b\w/g, c => c.toUpperCase());
+});
+
+function fokusBarcode(){
+  if (popup.style.display === "flex") return;
+
+  setTimeout(() => {
+    barcodeBaru.focus();
+  }, 100);
+}
+
+let idleTimer;
+const IDLE_TIME = 10000; // ⬅️ atur di sini (ms)
+
+function resetIdle(){
+  clearTimeout(idleTimer);
+
+  idleTimer = setTimeout(() => {
+    fokusBarcode();
+  }, IDLE_TIME);
+}
+
+// ===== ENTER BERANTAI FORM PRODUK =====
+
+barcodeBaru.addEventListener("keydown", function(e){
+  if(e.key==="Enter"){
+    e.preventDefault();
+    autoDetectBarcode();
+  }
+});
+
+// Enter di Nama -> ke Harga
+namaBaru.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    e.preventDefault();
+    hargaBaru.focus();
+  }
+});
+
+// Enter di Harga -> ke Stok
+hargaBaru.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    e.preventDefault();
+    stokBaru.focus();
+  }
+});
+
+// Enter di Stok -> Simpan
+stokBaru.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    e.preventDefault();
+    tambahProduk(); // langsung simpan
+  }
+});
+
+function formatRupiahInput(input){
+
+  input.addEventListener("input", function(e){
+
+    // ambil angka saja
+    let angka = this.value.replace(/\D/g,'');
+
+    // format ribuan
+    let format = new Intl.NumberFormat("id-ID").format(angka);
+
+    this.value = angka ? "Rp " + format : "";
+  });
+
+}
+
+// ambil angka murni dari input rupiah
+function ambilAngkaRupiah(teks){
+  return Number(teks.replace(/\D/g,'')) || 0;
+}
+
+function resetBarcode(){
+  barcodeBaru.value = "";
+  barcodeBaru.focus();
+}
+
+document.addEventListener("keydown", function(e){
+
+  if(e.key === "Escape"){
+
+    if(popup.style.display === "flex"){
+      popup.style.display = "none";
+      fokusBarcode();
+    } else {
+      resetBarcode();
+      tampilInfoProduk(null);
+    }
+
+  }
+
+});
+
+// ENTER di popup = simpan
+[e_barcode, e_nama, e_harga].forEach(el=>{
+  el.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      simpanEdit();
+    }
+  });
+});
+
+formatRupiahInput(hargaBaru);
+formatRupiahInput(e_harga);
+
+document.addEventListener("keydown", resetIdle);
+document.addEventListener("click", resetIdle);
+document.addEventListener("mousemove", resetIdle);
+
+function showToast(pesan, tipe="success"){
+  const toast = document.getElementById("toast");
+
+  toast.className = "";
+  toast.classList.add("show", "toast-"+tipe);
+  toast.innerText = pesan;
+
+  setTimeout(()=>{
+    toast.classList.remove("show");
+  }, 2500);
+}
+
+function tampilInfoProduk(p){
+  const box = document.getElementById("infoProduk");
+
+  if(!p){
+    box.style.display = "none";
+    box.innerHTML = "";
+    return;
+  }
+
+  box.style.display = "block";
+  box.innerHTML = `
+    <div style="font-weight:bold; font-size:14px; margin-bottom:4px;">
+      ${p.nama_produk}
+    </div>
+    <div>Harga : <b>Rp ${Number(p.harga).toLocaleString("id-ID")}</b></div>
+    <div>Stok saat ini : <b>${p.jumlah_stok}</b></div>
+  `;
+}
+
+</script>
+
+<div id="toast"></div>
+
+</body>
+</html>
