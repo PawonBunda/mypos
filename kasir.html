@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>TOKO PAKAIAN</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: #f4f6f9;
+  color: #333;
+}
+
+/* HEADER */
+h2, h3{
+  margin: 10px 0;
+}
+
+/* INPUT & BUTTON */
+input{
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 300px;
+  margin: 5px 0;
+  outline: none;
+}
+
+input:focus{
+  border-color: #4a90e2;
+  box-shadow: 0 0 5px rgba(74,144,226,0.3);
+}
+
+button{
+  padding: 10px 14px;
+  margin: 5px 3px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #4a90e2;
+  color: white;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+button:hover{
+  background: #357bd8;
+}
+
+/* APP CONTAINER */
+#app{
+  margin-top: 20px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* TABLE */
+table{
+  width: 100%;
+  max-width: 850px;
+  margin: 10px auto;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 12px; /* kecil banget */
+}
+
+/* HEADER + CELL SUPER COMPACT */
+th, td{
+  padding: 4px 6px;   /* diperkecil lagi */
+  text-align: center;
+}
+
+/* HEADER */
+th{
+  font-size: 12px;
+  background: #4a90e2;
+  color: #fff;
+}
+
+/* ROW HEIGHT MINIMAL */
+tr{
+  height: 28px;
+}
+
+/* CART AREA SCROLL BIAR TIDAK PANJANG */
+#posLayout{
+  display: flex;
+  gap: 15px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* KIRI */
+#leftPanel{
+  flex: 1;
+  background: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* KANAN (CART) */
+#rightPanel{
+  width: 420px;
+  background: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 10px;
+  height: fit-content;
+}
+
+/* RESPONSIVE HP */
+@media (max-width: 900px){
+  #posLayout{
+    flex-direction: column;
+  }
+  #rightPanel{
+    width: 100%;
+    position: relative;
+  }
+}
+
+/* BUTTON HAPUS LEBIH KECIL */
+td button{
+  padding: 3px 6px;
+  font-size: 11px;
+  border-radius: 5px;
+}
+
+/* TOTAL LEBIH COMPACT */
+.total{
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+/* INPUT LEBIH KECIL */
+input{
+  padding: 7px;
+  font-size: 13px;
+}
+
+/* SEARCH RESULT */
+#hasilCari{
+  max-width: 400px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+#hasilCari div{
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+#hasilCari div:hover{
+  background: #f0f6ff;
+}
+
+/* POPUP */
+#popup, #adminPopup{
+  display: none;
+  position: fixed;
+  top: 0;left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+#popupBox{
+  background: white;
+  padding: 20px;
+  width: 340px;
+  border-radius: 12px;
+  max-height: 80vh;
+  overflow: auto;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+
+
+/* PRINT */
+@media print{
+  body *{
+    visibility: hidden;
+  }
+  #printArea, #printArea *{
+    visibility: visible;
+  }
+  #printArea{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    font-family: monospace;
+    font-size: 12px;
+  }
+}
+
+.infoBox{
+  background:#eef5ff;
+  padding:8px;
+  border-radius:8px;
+  font-size:13px;
+  margin:10px 0;
+  font-weight:bold;
+}
+
+.clockBox{
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.clockItem{
+  background: #f1f6ff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* JAM (lebih menonjol) */
+.clockItem.time{
+  background: linear-gradient(135deg, #4a90e2, #6fb1fc);
+  color: white;
+  animation: pulseGlow 2s infinite;
+}
+
+/* ANIMASI GLOW HALUS */
+@keyframes pulseGlow{
+  0% { box-shadow: 0 0 5px rgba(74,144,226,0.4); }
+  50% { box-shadow: 0 0 15px rgba(74,144,226,0.7); }
+  100% { box-shadow: 0 0 5px rgba(74,144,226,0.4); }
+}
+
+.cekTanggalBox{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.cekTanggalBox input{
+  width:140px;
+  padding:6px;
+  font-size:12px;
+}
+
+.btnClearTanggal{
+  padding:6px 10px;
+  border-radius:6px;
+  background:#e74c3c;
+  font-size:12px;
+}
+
+.btnClearTanggal:hover{
+  background:#c0392b;
+}
+
+.totalTanggalText{
+  font-weight:bold;
+  font-size:13px;
+}
+
+.infoBox.centerBox{
+  display: flex;
+  justify-content: center;   /* tengah horizontal */
+  align-items: center;       /* tengah vertikal */
+  text-align: center;
+  margin: 10px auto;
+  width: fit-content;
+  padding: 10px 18px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.headerKasir{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.kasirItem{
+  font-weight:bold;
+  font-size:14px;
+}
+
+.headerKasir{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.kasirItem{
+  font-weight:bold;
+  font-size:14px;
+}
+
+.rightClock{
+  margin-left:auto;   /* 🔥 dorong ke kanan */
+  display:flex;
+  gap:10px;
+}
+
+/* ===== ALERT MODERN POS ===== */
+#alertBox{
+  position: fixed;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-30px);
+  min-width: 280px;
+  max-width: 420px;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: all .35s cubic-bezier(.22,1,.36,1);
+  border-left: 8px solid transparent;
+}
+
+#alertBox.show{
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* icon lebih besar & bulat */
+#alertIcon{
+  font-size: 22px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+/* warna berdasarkan tipe */
+#alertBox.success{
+  border-left-color: #2ecc71;
+}
+#alertBox.success #alertIcon{
+  color: #2ecc71;
+}
+
+#alertBox.error{
+  border-left-color: #e74c3c;
+}
+#alertBox.error #alertIcon{
+  color: #e74c3c;
+}
+
+#alertBox.warning{
+  border-left-color: #f1c40f;
+}
+#alertBox.warning #alertIcon{
+  color: #f39c12;
+}
+/* isi alert jadi vertikal & rata tengah */
+#alertBox{
+  flex-direction: column;
+  text-align: center;
+  gap: 10px;
+}
+
+/* icon di tengah */
+#alertIcon{
+  margin: 0 auto;
+}
+
+/* teks benar-benar center */
+#alertText{
+  text-align: center;
+  line-height: 1.4;
+}
+</style>
+
+</head>
+
+<body>
+
+
+<div id="app">
+
+  <button onclick="window.location.href='dashboard.html'">
+  📊 Dashboard Stok
+</button>
+
+  <button onclick="logout()" style="margin-left:10px;background:#e74c3c">
+      Logout
+    </button>
+    
+  <div class="infoBox centerBox">
+  💰 Penjualan Hari Ini :  <span id="totalHarian"> Rp 0</span>
+</div>
+  
+  <div id="posLayout">
+
+    
+    
+    <!-- KIRI -->
+
+        <div id="leftPanel">
+          <div class="infoBox headerKasir">
+  
+  <div class="kasirItem">
+    👤 Kasir: <span id="kasirName">-</span>
+  </div>
+
+  <div class="rightClock">
+    <div class="clockItem">
+      📅 <span id="tgl"></span>
+    </div>
+    <div class="clockItem time">
+      ⏰ <span id="jam"></span>
+    </div>
+  </div>
+
+</div>
+
+    <div class="infoBox cekTanggalBox">
+      <span>📅</span>
+      <input type="date" id="tglCari" onchange="cekTanggal()">
+      <button class="btnClearTanggal" onclick="clearTanggal()">✖</button>
+      <span class="totalTanggalText">💵 <span id="totalTanggal">Rp 0</span></span>
+    </div>
+
+          
+
+      <h3>Scan Barcode</h3>
+      <input id="scan">
+
+      <h3>Cari Produk</h3>
+      <input id="cariNama" oninput="cariProduk()" placeholder="Ketik nama...">
+      <div id="hasilCari"></div>
+
+    </div>
+
+    <!-- KANAN (CART) -->
+    <div id="rightPanel">
+
+      <h3>Cart</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Produk</th><th>Harga</th><th>Qty</th><th>Subtotal</th><th>❌</th>
+          </tr>
+        </thead>
+        <tbody id="cartBody"></tbody>
+      </table>
+
+      <div class="total">Total: <span id="total">Rp 0</span></div>
+
+      <input id="bayar" type="number" placeholder="Uang Bayar">
+      <button type="button" onclick="bayarTransaksi()">Bayar</button>
+
+      <div class="total">Kembalian: <span id="kembalian">Rp 0</span></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- POPUP -->
+<div id="popup">
+  <div id="popupBox" tabindex="0">
+    <h3>Rincian Transaksi</h3>
+
+    <div id="popupDetail"></div>
+
+    <hr>
+
+    <b>Total: <span id="popupTotal"></span></b><br>
+    <b>Bayar: <span id="popupBayar"></span></b><br>
+    <b>Kembalian: <span id="popupKembali"></span></b>
+
+    <br><br>
+
+    <button type="button" onclick="cetakStrukFinal()">🖨 Cetak Struk</button>
+    <button type="button" onclick="tutupPopup()">❌ Tutup</button>
+  </div>
+</div>
+
+
+
+<div id="printArea"></div>
+
+<script>
+
+const scan = document.getElementById("scan");
+const bayar = document.getElementById("bayar");
+const cariNama = document.getElementById("cariNama");
+const app = document.getElementById("app");
+
+const popup = document.getElementById("popup");
+const popupBox = document.getElementById("popupBox");
+const popupDetail = document.getElementById("popupDetail");
+const popupTotal = document.getElementById("popupTotal");
+const popupBayar = document.getElementById("popupBayar");
+const popupKembali = document.getElementById("popupKembali");
+const printArea = document.getElementById("printArea");
+
+
+
+const URL="https://script.google.com/macros/s/AKfycbx8bgj-LJumZDGnzDAcN5_XLTe8D-YyWHQAuIfAawYVmVjvuDZXrHIuEvvYySQ4AlbBRQ/exec";
+
+let produkDB={}, produkList=[], cart={}, kasir="", total=0, uangBayar=0;
+
+
+const totalEl=document.getElementById("total");
+const cartBody=document.getElementById("cartBody");
+const kembalianEl=document.getElementById("kembalian");
+
+function showAlert(pesan, tipe="warning"){
+  const box = document.getElementById("alertBox");
+  const text = document.getElementById("alertText");
+  const icon = document.getElementById("alertIcon");
+
+  text.innerText = pesan;
+
+  box.className = "";
+  box.classList.add(tipe, "show");
+
+  if(tipe === "success") icon.innerText = "✅";
+  if(tipe === "error") icon.innerText = "⛔";
+  if(tipe === "warning") icon.innerText = "🔔";
+
+  setTimeout(()=>{
+    box.classList.remove("show");
+  }, 2500);
+}
+
+function rupiah(a){
+  return "Rp "+Number(a).toLocaleString("id-ID");
+}
+
+// LOAD PRODUK
+function loadProduk(){
+  fetch(URL + "?action=produk")
+   .then(r=>r.json())
+   .then(data=>{
+
+     produkDB = {};
+     produkList = [];
+
+     data.forEach(p=>{
+
+       const obj = {
+         barcode: String(p.barcode).trim(),
+         nama_produk: p.nama_produk,
+         harga: Number(p.harga),
+         stok: Number(p.jumlah_stok) || 0
+       };
+
+       produkDB[obj.barcode] = obj;
+       produkList.push(obj);
+     });
+
+   });
+}
+setInterval(loadProduk, 3000);
+setInterval(loadTotalHarian, 5000);
+
+
+function logout(){
+  // hapus session kasir
+  localStorage.removeItem("kasirAktif");
+
+  // kosongkan data
+  kasir = "";
+  cart = {};
+  total = 0;
+
+  // langsung kembali ke halaman login (index.html)
+  window.location.href = "index.html";
+}
+
+
+window.onload = function(){
+
+  const savedKasir = localStorage.getItem("kasirAktif");
+
+  // jika belum login → kembali ke login
+  if(!savedKasir){
+    window.location.href = "index.html";
+    return;
+  }
+
+  kasir = savedKasir;
+  kasirName.innerText = kasir;
+
+  fokusScan();
+  loadProduk();
+  loadTotalHarian();
+};
+
+
+
+// JAM
+setInterval(()=>{
+  const now = new Date();
+
+  const opsi = {
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  };
+
+  tgl.innerText = now.toLocaleDateString("id-ID", opsi);
+  jam.innerText = now.toLocaleTimeString("id-ID");
+},1000);
+
+// SCAN
+scan.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+
+    let k = scan.value.trim();
+    scan.value = "";
+
+    // 🚫 jika kosong
+    if (!k) {
+      showAlert("Barcode kosong!", "warning");
+      return;
+    }
+
+    let p = produkDB[k];
+
+    // 🚫 jika barcode tidak ditemukan
+    if (!p) {
+      showAlert("Barcode tidak terdaftar!", "error");
+      return;
+    }
+
+    // 🚫 jika stok habis
+    if (p.stok <= 0) {
+      showAlert("Stok habis!", "error");
+      return;
+    }
+
+    // ✅ jika semua aman
+    tambahCart(p);
+  }
+});
+
+// TAMBAH CART
+function tambahCart(p){
+
+ if(cart[p.barcode]){
+   if(cart[p.barcode].qty>=p.stok){
+     showAlert("Stok tidak cukup","warning");
+     return;
+   }
+   cart[p.barcode].qty++;
+ } else {
+   cart[p.barcode]={...p,qty:1};
+ }
+
+ render();
+ updateKembalian();
+}
+
+// SEARCH
+function cariProduk(){
+ let q=cariNama.value.toLowerCase();
+ hasilCari.innerHTML="";
+
+ if(!q) return;
+
+ produkList.filter(p=>p.nama_produk.toLowerCase().includes(q))
+ .forEach(p=>{
+   let d=document.createElement("div");
+   d.innerText=`${p.nama_produk} - ${rupiah(p.harga)} (Stok: ${p.stok})`;
+
+   if(p.stok>0){
+     d.onclick=()=>tambahCart(p);
+   } else {
+     d.style.color="red";
+     d.style.opacity="0.5";
+   }
+
+   hasilCari.appendChild(d);
+ });
+}
+
+// RENDER
+function render(){
+ cartBody.innerHTML="";
+ total=0;
+
+ for(let k in cart){
+   let p=cart[k];
+   let sub=p.qty*p.harga;
+   total+=sub;
+
+   cartBody.innerHTML+=`
+   <tr>
+   <td>${p.nama_produk}</td>
+   <td>${rupiah(p.harga)}</td>
+   <td>${p.qty}</td>
+   <td>${rupiah(sub)}</td>
+   <td><button onclick="hapusItem('${k}')">❌</button></td>
+   </tr>`;
+ }
+
+ totalEl.innerText=rupiah(total);
+}
+
+function updateKembalian(){
+  let uang = parseInt(bayar.value || 0);
+  let kembali = uang - total;
+
+  if(kembali <= 0){
+    kembalianEl.innerText = "Rp 0";
+  } else {
+    kembalianEl.innerText = rupiah(kembali);
+  }
+}
+
+function hapusItem(k){
+ delete cart[k];
+ render();
+}
+
+// BAYAR → POPUP
+function bayarTransaksi(){
+
+  // 🚫 CEK CART KOSONG
+  if(Object.keys(cart).length === 0){
+    showAlert("Cart masih kosong!","warning");
+    scan.focus();
+    return;
+  }
+
+  let uang=parseInt(bayar.value||0);
+
+  if(uang<total){
+    showAlert("Uang kurang! Total: "+rupiah(total));
+    return;
+  }
+
+  uangBayar=uang;
+  bukaPopup();
+}
+
+// POPUP
+function bukaPopup(){
+
+ let detail="";
+
+ for(let k in cart){
+   let p=cart[k];
+   detail+=`${p.nama_produk}<br>${p.qty} x ${rupiah(p.harga)}<br><br>`;
+ }
+
+ popupDetail.innerHTML = detail;
+ popupTotal.innerText = rupiah(total);
+ popupBayar.innerText = rupiah(uangBayar);
+ popupKembali.innerText = rupiah(uangBayar - total);
+
+ popup.style.display = "flex";
+
+ // 🔥 PINDAHKAN FOKUS KE POPUP
+ popupBox.setAttribute("tabindex", "0");
+ popupBox.focus();
+}
+
+function tutupPopup(){
+ popup.style.display="none";
+}
+
+// CETAK + KIRIM SHEET (FINAL)
+function cetakStrukFinal(){
+
+  // ====== BUAT ISI STRUK ======
+  let html = `<div>
+  <h3>STRUK</h3>
+  Kasir: ${kasir}<br>
+  ${tgl.innerText} ${jam.innerText}<hr>`;
+
+  for(let k in cart){
+    let p = cart[k];
+    html += `${p.nama_produk}<br>
+             ${p.qty} x ${rupiah(p.harga)}<br>`;
+  }
+
+  html += `<hr>
+  Total: ${rupiah(total)}<br>
+  Bayar: ${rupiah(uangBayar)}<br>
+  Kembali: ${rupiah(uangBayar-total)}
+  </div>`;
+
+  // ====== TAMPILKAN KE AREA PRINT ======
+  printArea.innerHTML = html;
+
+  // ====== PRINT ======
+  window.print();
+
+  // ====== KIRIM KE GOOGLE SHEET ======
+  kirimTransaksi(uangBayar);
+
+  // ====== RESET SEMUA SETELAH TRANSAKSI ======
+  setTimeout(()=>{
+
+    // Kosongkan cart
+    cart = {};
+    render();
+    loadTotalHarian();
+
+    // Reset input bayar & kembalian
+    bayar.value = "";
+    kembalianEl.innerText = "Rp 0";
+
+    // Tutup popup
+    popup.style.display = "none";
+
+    // Bersihkan area print
+    printArea.innerHTML = "";
+
+    // 🔥 Kosongkan pencarian produk
+    cariNama.value = "";
+    hasilCari.innerHTML = "";
+
+    // 🔥 Fokus balik ke scan barcode
+    scan.focus();
+
+  },500);
+}
+
+
+// KIRIM KE SHEET
+function kirimTransaksi(uang){
+ const items=Object.values(cart).map(p=>({
+   barcode:p.barcode,
+   nama:p.nama_produk,
+   harga:p.harga,
+   qty:p.qty,
+   subtotal:p.qty*p.harga
+ }));
+
+ fetch(URL,{
+   method:"POST",
+   body:JSON.stringify({
+     action:"simpanPenjualan",
+     kasir,
+     tanggal: new Date().toISOString().slice(0,10),
+     jam:jam.innerText,
+     items:JSON.stringify(items)
+   })
+ });
+}
+
+
+function loadTotalHarian(){
+  fetch(URL + "?action=totalHarian")
+    .then(r => r.text())
+    .then(total => {
+      document.getElementById("totalHarian").innerText = rupiah(total);
+    });
+}
+
+function cekTanggal(){
+  const tgl = document.getElementById("tglCari").value;
+
+  if(!tgl) return;
+
+  fetch(URL + "?action=totalByTanggal&tanggal=" + tgl)
+    .then(r => r.text())
+    .then(total => {
+      document.getElementById("totalTanggal").innerText = rupiah(total);
+    });
+}
+
+function clearTanggal(){
+  document.getElementById("tglCari").value = "";
+  document.getElementById("totalTanggal").innerText = "Rp 0";
+}
+
+let stepEnter = 0;
+
+// Hitung kembalian realtime saat ketik uang
+bayar.addEventListener("input", updateKembalian);
+// ENTER di input bayar
+bayar.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    e.preventDefault();
+    e.stopPropagation();   // 🔥 INI KUNCI NYA
+
+    if(popup.style.display === "flex") return;
+
+    bayarTransaksi(); // hanya buka popup
+  }
+});
+
+// ENTER & ESC saat popup
+document.addEventListener("keydown", function(e){
+
+  if(popup.style.display === "flex"){
+
+    if(e.key === "Enter"){
+      e.preventDefault();
+      cetakStrukFinal(); // enter kedua
+    }
+
+    if(e.key === "Escape"){
+      e.preventDefault();
+      tutupPopup();
+      bayar.focus();
+    }
+
+  }
+
+});
+
+
+function fokusScan(){
+  if (popup.style.display === "flex") return;
+
+  setTimeout(() => {
+    scan.focus();
+  }, 100);
+}
+
+let idleTimer;
+const IDLE_TIME = 10000; // 5 detik biar responsif
+
+function resetIdle(){
+  clearTimeout(idleTimer);
+
+  idleTimer = setTimeout(() => {
+    fokusScan();
+  }, IDLE_TIME);
+}
+
+document.addEventListener("keydown", resetIdle);
+document.addEventListener("mousemove", resetIdle);
+document.addEventListener("click", resetIdle);
+bayar.addEventListener("focus", resetIdle);
+bayar.addEventListener("input", resetIdle);
+</script>
+
+<!-- POPUP ALERT MODERN -->
+<div id="alertBox">
+  <div class="alertContent">
+    <div id="alertIcon">⚠️</div>
+    <div id="alertText">Pesan</div>
+  </div>
+</div>
+
+</body>
+</html>
