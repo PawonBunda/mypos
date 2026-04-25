@@ -289,14 +289,111 @@ tbody tr{
 .toast-error{ background: #e74c3c; }
 .toast-info{ background: #3498db; }
 
+tbody tr{
+  cursor: pointer;
+}
+
+.modal{
+  position: fixed;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.modalBox{
+  background:white;
+  width:340px;
+  border-radius:12px;
+  padding:16px;
+  animation: pop 0.2s ease;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+.detailBody{
+  margin-top:10px;
+}
+
+.detailRow{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid #eee;
+  font-size:13px;
+}
+
+.detailRow.highlight{
+  font-size:15px;
+  font-weight:bold;
+  color:#2c3e50;
+}
+
+#detailNama{
+  margin:0;
+}
+
+#detailPopup{
+  position: fixed;
+}
+
+#detailLoading{
+  z-index: 2;
+}
+
+/* LOADING KHUSUS POPUP KASIR */
+.kasirLoading{
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(255,255,255,0.8);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  border-radius:12px;
+  font-weight:bold;
+  font-size:14px;
+  color:#333;
+  z-index:5;
+}
+
+.modal{
+  z-index: 9999;
+}
+
+#confirmPopup{
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
 </style>
 </head>
 
 <body>
 
+  <div>
 <button onclick="window.location.href='index.html'">
   🧾 Halaman Kasir
 </button>
+
+<button onclick="window.location.href='dashboard.html'">
+  📊 Dashboard Stok
+</button>
+
+<button onclick="bukaPopupKasir()">
+  👤 Tambah Kasir
+</button>
+
+<button onclick="bukaListKasir()">
+  📋 List Kasir
+</button>
+
+</div>
+
 
 <h2>➕ Tambah / Update Produk</h2>
 
@@ -375,7 +472,7 @@ const hargaBaru = document.getElementById("hargaBaru");
 const stokBaru = document.getElementById("stokBaru");
 const popup = document.getElementById("popup");
 
-const URL="https://script.google.com/macros/s/AKfycbzb5HFyCTAH8PfCzx6DlKwh_2-eviTC-INEtq_yTDyHevcxkSepYH-pODcprq_NAaXYug/exec";
+const URL="https://script.google.com/macros/s/AKfycbyDV2fXvon271SjTkhwHLdKJPNTl_YOMaLl3OuqEX4VrRVfRuElgLTUJIzInjCMCzGtag/exec";
 
 let semuaProduk=[];
 let barcodeEdit="";
@@ -406,12 +503,14 @@ function loadProduk(){
   }
 
   bodyProduk.innerHTML += `
-  <tr class="${warna}">
+<tr class="${warna}" onclick="lihatDetail('${p.barcode}')">
     <td>${p.barcode}</td>
     <td>${p.nama_produk}</td>
     <td>${rupiah(p.harga || p.harga_jual || p.harga_produk)}</td>
     <td>${stok}</td>
-    <td><button onclick="bukaEdit('${p.barcode}')">Edit</button></td>
+    <td><button onclick="event.stopPropagation(); bukaEdit('${p.barcode}')">
+Edit
+</button></td>
   </tr>`;
     });
  });
@@ -636,9 +735,10 @@ function simpanEdit(){
   fokusBarcode();
 })
  .catch(()=>{
-   loading.style.display="none";
-   alert("❌ Gagal menyimpan");
- });
+  loadingKasir.style.display = "none";
+  btns.forEach(b=> b.disabled = false);
+  showToast("Gagal menyimpan kasir","error");
+});
 }
 
 e_nama.addEventListener("input", function () {
@@ -795,9 +895,428 @@ function tampilInfoProduk(p){
   `;
 }
 
+function lihatDetail(barcode){
+
+  let p = semuaProduk.find(x => x.barcode == barcode);
+  if(!p) return;
+
+  const popup = document.getElementById("detailPopup");
+  const loading = document.getElementById("detailLoading");
+
+  // tampilkan popup dulu
+  popup.style.display = "flex";
+
+  // tampilkan loading
+  loading.style.display = "block";
+
+  // sembunyikan isi dulu (biar tidak flicker)
+  document.querySelector(".modalBox").style.opacity = "0.3";
+
+  fetch(URL + "?action=logProduk&barcode=" + barcode)
+  .then(r => r.json())
+  .then(log => {
+
+    let masuk = 0;
+    let terjual = 0;
+
+    log.forEach(l => {
+      if(l.tipe === "TAMBAH_STOK" || l.tipe === "PRODUK_BARU"){
+        masuk += Number(l.qty);
+      }
+
+      if(l.tipe === "PENJUALAN"){
+        terjual += Number(l.qty);
+      }
+    });
+
+    document.getElementById("detailNama").innerText = p.nama_produk;
+    document.getElementById("dBarcode").innerText = p.barcode;
+    document.getElementById("dHarga").innerText = "Rp " + Number(p.harga).toLocaleString("id-ID");
+    document.getElementById("dMasuk").innerText = masuk;
+    document.getElementById("dTerjual").innerText = terjual;
+    document.getElementById("dStok").innerText = p.jumlah_stok;
+    document.getElementById("dLastRestock").innerText =  
+      formatTanggal(p.last_restock);
+
+    // selesai loading
+    loading.style.display = "none";
+    document.querySelector(".modalBox").style.opacity = "1";
+
+  })
+  .catch(() => {
+    loading.innerText = "❌ Gagal memuat data";
+  });
+
+}
+
+function closeDetail(){
+  document.getElementById("detailPopup").style.display = "none";
+}
+
+function formatTanggal(tgl){
+  if(!tgl) return "Belum pernah restock";
+
+  let d = new Date(tgl);
+  if(isNaN(d.getTime())) return "-";
+
+  return d.toLocaleString("id-ID", {
+    day:"2-digit",
+    month:"short",
+    year:"numeric",
+    hour:"2-digit",
+    minute:"2-digit"
+  });
+}
+
+function tambahKasir(nama, password){
+  const sh = SpreadsheetApp.getActive().getSheetByName("DATA_KASIR");
+  if(!sh) return "SHEET_NOT_FOUND";
+
+  const data = sh.getDataRange().getValues();
+
+  const namaFix = String(nama).trim().toLowerCase();
+
+  for (let i = 1; i < data.length; i++) {
+    const namaSheet = String(data[i][0]).trim().toLowerCase();
+    if (namaSheet === namaFix) {
+      return "EXIST";
+    }
+  }
+
+  sh.appendRow([nama.trim(), password.trim(), "YA"]);
+  return "OK";
+}
+
+// ================= KASIR =================
+function bukaPopupKasir(){
+  document.getElementById("popupKasir").style.display = "flex";
+  setTimeout(()=> document.getElementById("k_nama").focus(),100);
+}
+
+function tutupPopupKasir(){
+  document.getElementById("popupKasir").style.display = "none";
+  document.getElementById("k_nama").value="";
+  document.getElementById("k_password").value="";
+}
+
+function simpanKasir(){
+  const nama = properCaseNama(k_nama.value.trim());
+  const password = k_password.value.trim();
+
+  if(!nama || !password){
+    return showToast("Lengkapi nama & password","error");
+  }
+
+  const loadingKasir = document.getElementById("kasirLoading");
+  const btns = document.querySelectorAll("#popupKasir button");
+
+  loadingKasir.style.display = "flex";
+  btns.forEach(b=> b.disabled = true);
+
+  fetch(URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify({
+      action: "tambahKasir",
+      nama: nama,
+      password: password
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+
+    loadingKasir.style.display = "none";
+    btns.forEach(b => b.disabled = false);
+
+    if(res.status === "EXIST"){
+      showToast("Kasir sudah ada ❌","error");
+    }
+    else if(res.status === "OK"){
+      showToast("Kasir berhasil ditambahkan ✅","success");
+      tutupPopupKasir();
+    }
+    else {
+      showToast("Gagal: " + res.status,"error");
+    }
+
+  })
+  .catch(() => {
+    loadingKasir.style.display = "none";
+    btns.forEach(b => b.disabled = false);
+    showToast("Request gagal ❌","error");
+  });
+}
+
+function properCaseNama(text){
+  return text
+    .toLowerCase()
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+
+function tutupListKasir(){
+  document.getElementById("popupListKasir").style.display = "none";
+}
+
+function bukaListKasir(){
+  const box = document.getElementById("isiListKasir");
+  box.innerHTML = "⏳ Memuat data kasir...";
+
+  document.getElementById("popupListKasir").style.display = "flex";
+
+  fetch(URL + "?action=listKasir")
+  .then(r => r.json())
+  .then(data => {
+
+    if(!data || data.length === 0){
+      box.innerHTML = "Belum ada kasir";
+      return;
+    }
+
+    let html = `
+<table style="width:100%; font-size:13px;">
+<tr>
+  <th>Nama</th>
+  <th>Password</th>
+  <th>Status</th>
+  <th>Aksi</th>
+</tr>
+`;
+
+    data.forEach(k => {
+
+      let tombolAktif = k.aktif === "YA"
+        ? `<button onclick="nonaktifKasir('${k.nama}')">🔴 Nonaktif</button>`
+        : `<button onclick="aktifKasir('${k.nama}')">🟢 Aktifkan</button>`;
+
+      html += `
+<tr>
+  <td>${k.nama}</td>
+  <td>${k.password}</td>
+  <td>${k.aktif}</td>
+  <td>
+    ${tombolAktif}
+    <button onclick="hapusKasir('${k.nama}')" style="background:#e74c3c;">
+      🗑 Hapus
+    </button>
+  </td>
+</tr>`;
+    });
+
+    html += "</table>";
+    box.innerHTML = html;
+
+  })
+  .catch(() => {
+    box.innerHTML = "❌ Gagal mengambil data kasir";
+  });
+}
+
+
+// ================= FIX HAPUS KASIR =================
+function hapusKasir(nama){
+
+  showConfirm("Yakin mau hapus kasir " + nama + "?", function(){
+
+    fetch(URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        action: "hapusKasir",
+        nama: nama
+      })
+    })
+    .then(r => r.json())
+    .then(res => {
+
+      if(res.status === "OK"){
+        showToast("Kasir berhasil dihapus 🗑","success");
+        bukaListKasir(); // reload list
+      }
+      else if(res.status === "NOT_FOUND"){
+        showToast("Kasir tidak ditemukan","error");
+      }
+      else {
+        showToast("Error: " + res.status,"error");
+      }
+
+    })
+    .catch(() => {
+      showToast("Gagal menghapus kasir ❌","error");
+    });
+
+  });
+
+}
+
+function nonaktifKasir(nama){
+  fetch(URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"setAktifKasir",
+      nama:nama,
+      status:"TIDAK"
+    })
+  })
+  .then(()=> bukaListKasir());
+}
+
+function aktifKasir(nama){
+  fetch(URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"setAktifKasir",
+      nama:nama,
+      status:"YA"
+    })
+  })
+  .then(()=> bukaListKasir());
+}
+
+let confirmCallback = null;
+
+function showConfirm(pesan, callback){
+  const popup = document.getElementById("confirmPopup");
+
+  document.getElementById("confirmText").innerText = pesan;
+
+  popup.style.display = "flex";
+
+  confirmCallback = callback || null;
+}
+
+function tutupConfirm(){
+  document.getElementById("confirmPopup").style.display = "none";
+  confirmCallback = null;
+}
+
+function tutupConfirm(){
+  document.getElementById("confirmPopup").style.display = "none";
+  confirmCallback = null;
+}
+
+// tombol YES
+window.addEventListener("load", () => {
+
+  const btn = document.getElementById("btnConfirmYes");
+
+  if(btn){
+    btn.addEventListener("click", function(){
+      if(confirmCallback) confirmCallback();
+      tutupConfirm();
+    });
+  }
+
+});
+
 </script>
 
 <div id="toast"></div>
+
+<!-- POPUP DETAIL PRODUK -->
+<div id="detailPopup" class="modal">
+
+  <div id="detailLoading" style="
+  display:none;
+  position:absolute;
+  color:white;
+  font-weight:bold;
+  font-size:14px;
+">
+  ⏳ Memuat detail...
+</div>
+
+  <div class="modalBox">
+
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h3 id="detailNama">Detail Produk</h3>
+      <button onclick="closeDetail()" style="background:#e74c3c;">✖</button>
+    </div>
+
+    <div class="detailBody">
+
+      <div class="detailRow">
+        <span>Barcode</span>
+        <b id="dBarcode"></b>
+      </div>
+
+      <div class="detailRow">
+        <span>Harga</span>
+        <b id="dHarga"></b>
+      </div>
+
+      <div class="detailRow">
+        <span>📥 Total Masuk</span>
+        <b id="dMasuk"></b>
+      </div>
+
+      <div class="detailRow">
+        <span>📤 Terjual</span>
+        <b id="dTerjual"></b>
+      </div>
+
+      <div class="detailRow highlight">
+        <span>📦 Sisa Stok</span>
+        <b id="dStok"></b>
+      </div>
+
+      <div class="detailRow">
+        <span>🕒 Last Restock</span>
+        <b id="dLastRestock">-</b>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- POPUP TAMBAH KASIR -->
+<div id="popupKasir" class="modal">
+  <div class="modalBox" style="position:relative;">
+
+    <div id="kasirLoading" class="kasirLoading">
+      ⏳ Menyimpan kasir...
+    </div>
+
+    <h3>Tambah Kasir</h3>
+
+    <input type="text" id="k_nama" oninput="this.value = properCaseNama(this.value)">
+    <input id="k_password" placeholder="Password" type="password"><br><br>
+
+    <button onclick="simpanKasir()">Simpan</button>
+    <button onclick="tutupPopupKasir()" style="background:#e74c3c;">Batal</button>
+  </div>
+</div>
+
+<div id="popupListKasir" class="modal">
+  <div class="modalBox">
+    <h3>List Kasir</h3>
+
+    <div id="isiListKasir">
+      Memuat data kasir...
+    </div>
+
+    <br>
+    <button onclick="tutupListKasir()" style="background:#e74c3c;">Tutup</button>
+  </div>
+</div>
+
+<!-- POPUP KONFIRMASI -->
+<div id="confirmPopup" class="modal">
+  <div class="modalBox" style="max-width:320px; text-align:center;">
+    <h3 id="confirmTitle">Konfirmasi</h3>
+    <div id="confirmText" style="margin:14px 0; font-size:14px;"></div>
+
+    <div style="display:flex; gap:8px; justify-content:center;">
+      <button id="btnConfirmYes" style="background:#e74c3c;">Ya, Hapus</button>
+      <button onclick="tutupConfirm()">Batal</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
