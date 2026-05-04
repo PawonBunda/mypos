@@ -828,14 +828,14 @@ namaBaru.addEventListener("input", function () {
 });
 
 function fokusBarcode(){
-
   if (popup.style.display === "flex") return;
 
-  setTimeout(() => {
-    barcodeBaru.blur(); // 🔥 tambahan penting
-    barcodeBaru.focus({ preventScroll: true });
+  // hanya fokus kalau user memang tidak sedang isi field lain
+  const aktif = document.activeElement;
 
-  }, 350);
+  if (aktif === barcodeBaru) return;
+
+  barcodeBaru.focus();
 }
 
 let idleTimer;
