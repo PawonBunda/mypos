@@ -482,7 +482,7 @@ tbody tr{
 <div class="formBar">
 
   <div style="display:flex; gap:6px; align-items:center;">
-  <input id="barcodeBaru" placeholder="Barcode" style="flex:1;">
+  <input id="barcodeBaru" placeholder="Barcode" style="flex:1;" inputmode="none" autocomplete="off">
   <button type="button" onclick="resetBarcode()">↺</button>
 </div>
   <input id="namaBaru" placeholder="Nama Produk">
@@ -592,9 +592,11 @@ window.onload = function(){
 };
 
 // ================= AUTO DETECT BARCODE =================
-barcodeBaru.addEventListener("change", autoDetectBarcode);
 barcodeBaru.addEventListener("keydown", function(e){
-  if(e.key==="Enter") autoDetectBarcode();
+  if(e.key==="Enter"){
+    e.preventDefault();
+    autoDetectBarcode();
+  }
 });
 
 function autoDetectBarcode(){
@@ -826,11 +828,14 @@ namaBaru.addEventListener("input", function () {
 });
 
 function fokusBarcode(){
+
   if (popup.style.display === "flex") return;
 
   setTimeout(() => {
-    barcodeBaru.focus();
-  }, 100);
+    barcodeBaru.blur(); // 🔥 tambahan penting
+    barcodeBaru.focus({ preventScroll: true });
+
+  }, 350);
 }
 
 let idleTimer;
