@@ -1,23 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta charset="UTF-8">
 <title>Dashboard Stok PRO</title>
 
 <style>
-
- input, textarea, select {
-  font-size:16px;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-}
-
-input, textarea, select {
-  font-size:16px;
-}
 
 body{
   font-family: Arial;
@@ -223,14 +210,6 @@ button[onclick*="kasir.html"]:active{
   box-shadow:0 4px 10px rgba(0,0,0,0.15);
 }
 
-html {
-  -webkit-text-size-adjust: 100%;
-}
-
-input {
-  font-size:16px !important;
-}
-
 </style>
 </head>
 
@@ -240,18 +219,6 @@ input {
 </button>
 
 <body>
-
-  <input id="scanDash" type="text" readonly
-style="
-position:fixed;
-top:-50px;
-left:0;
-width:200px;
-height:40px;
-font-size:16px;
-opacity:0.01;
-border:none;
-">
 
 <h1>📊 Dashboard Stok</h1>
 
@@ -444,37 +411,6 @@ function formatTanggal(tgl){
 }
 
 
-</script>
-
-<script>
-// ===== SCANNER MODE DASHBOARD (tanpa keyboard) =====
-const scanDash = document.getElementById("scanDash");
-
-function fokusScannerDash(){
-  setTimeout(() => {
-    scanDash.focus({ preventScroll: true });
-  }, 50);
-}
-
-// fokus otomatis saat halaman buka
-window.addEventListener("load", fokusScannerDash);
-
-// setiap kali layar disentuh, balik fokus ke scanner
-document.addEventListener("touchstart", (e) => {
-  if(e.target !== scanDash){
-    fokusScannerDash();
-  }
-});
-
-// izinkan keyboard hanya kalau benar2 disentuh input
-scanDash.addEventListener("touchstart", () => {
-  scanDash.removeAttribute("readonly");
-});
-
-// setelah kehilangan fokus, kunci lagi
-scanDash.addEventListener("blur", () => {
-  scanDash.setAttribute("readonly", true);
-});
 </script>
 
 </body>
