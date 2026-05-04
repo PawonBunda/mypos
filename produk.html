@@ -832,7 +832,7 @@ barcodeBaru.addEventListener("input", function () {
   let kode = this.value.trim();
 
   // optional: kalau panjang barcode sudah cukup (misalnya >= 6)
-  if (kode.length >= 6) {
+  if (kode.length >= 25) {
     autoDetectBarcode();
   }
 });
