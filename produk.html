@@ -830,12 +830,26 @@ namaBaru.addEventListener("input", function () {
 function fokusBarcode(){
   if (popup.style.display === "flex") return;
 
-  // fokus TANPA memunculkan keyboard
-  barcodeBaru.blur();
-
-  // kasih indikator visual saja (opsional)
-  barcodeBaru.classList.add("auto-focus");
+  setTimeout(() => {
+    barcodeBaru.focus();
+  }, 50);
 }
+
+barcodeBaru.addEventListener("input", function () {
+  let kode = this.value.trim();
+
+  // optional: kalau panjang barcode sudah cukup (misalnya >= 6)
+  if (kode.length >= 6) {
+    autoDetectBarcode();
+  }
+});
+
+barcodeBaru.addEventListener("keydown", function(e){
+  if(e.key === "Enter" || e.key === "Tab"){
+    e.preventDefault();
+    autoDetectBarcode();
+  }
+});
 
 barcodeBaru.addEventListener("click", function () {
   this.focus();
@@ -1325,6 +1339,11 @@ function showListKasirLoading(show=true){
   const el = document.getElementById("listKasirLoading");
   el.style.display = show ? "flex" : "none";
 }
+
+barcodeBaru.setAttribute("inputmode", "none");
+barcodeBaru.setAttribute("autocomplete", "off");
+barcodeBaru.setAttribute("autocorrect", "off");
+barcodeBaru.setAttribute("autocapitalize", "off");
 
 </script>
 
