@@ -7,10 +7,21 @@
 
 <style>
 
-input{
-  font-size:16px;
-  padding:6px 8px; /* biar tetap ramping */
+input, select, textarea {
+  font-size:16px !important;
+  transform: scale(1);
 }
+
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size:16px !important;
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 
 body{
   font-family: Arial;
