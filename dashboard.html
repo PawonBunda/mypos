@@ -223,6 +223,14 @@ button[onclick*="kasir.html"]:active{
   box-shadow:0 4px 10px rgba(0,0,0,0.15);
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+input {
+  font-size:16px !important;
+}
+
 </style>
 </head>
 
@@ -236,13 +244,14 @@ button[onclick*="kasir.html"]:active{
   <input id="scanDash" type="text" readonly
 style="
 position:fixed;
-top:0;
+top:-50px;
 left:0;
-opacity:0;
-height:1px;
-width:1px;
+width:200px;
+height:40px;
+font-size:16px;
+opacity:0.01;
 border:none;
-z-index:-1;">
+">
 
 <h1>📊 Dashboard Stok</h1>
 
@@ -442,14 +451,20 @@ function formatTanggal(tgl){
 const scanDash = document.getElementById("scanDash");
 
 function fokusScannerDash(){
-  scanDash.focus();
+  setTimeout(() => {
+    scanDash.focus({ preventScroll: true });
+  }, 50);
 }
 
 // fokus otomatis saat halaman buka
 window.addEventListener("load", fokusScannerDash);
 
 // setiap kali layar disentuh, balik fokus ke scanner
-document.addEventListener("touchstart", fokusScannerDash);
+document.addEventListener("touchstart", (e) => {
+  if(e.target !== scanDash){
+    fokusScannerDash();
+  }
+});
 
 // izinkan keyboard hanya kalau benar2 disentuh input
 scanDash.addEventListener("touchstart", () => {
