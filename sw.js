@@ -1,26 +1,38 @@
-const CACHE_NAME = "posproo-cache-v1";
+const CACHE_NAME = "posproo-auto-v1";
 
-const urlsToCache = [
-  "/mypos/",
-  "/mypos/index.html",
-  "/mypos/dashboard.html",
-  "/mypos/kasir.html"
-];
-
-// Install
+// Saat install → langsung aktif, tidak nunggu
 self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(urlsToCache);
-    })
-  );
+  self.skipWaiting();
 });
 
-// Fetch
+// Saat aktif → hapus semua cache lama
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
+});
+
+// Fetch strategy: NETWORK FIRST (auto update)
 self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then(response => {
+        // Simpan versi baru ke cache
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, clone);
+        });
+        return response;
+      })
+      .catch(() => caches.match(event.request)) // jika offline baru pakai cache
   );
 });
