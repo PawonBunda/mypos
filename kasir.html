@@ -428,24 +428,67 @@ input{
   text-align: center;
   line-height: 1.4;
 }
+
+/* ===== TOP NAV KASIR ===== */
+
+.topNav{
+  display:flex;
+  gap:10px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+
+.navBtn{
+  padding:10px 16px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+  font-size:13px;
+  letter-spacing:.3px;
+  color:white;
+  background:linear-gradient(135deg,#3498db,#a6ccf3);
+  box-shadow:0 6px 14px rgba(74,144,226,0.35);
+  transition:all .2s ease;
+}
+
+.navBtn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 22px rgba(74,144,226,0.45);
+  filter:brightness(1.05);
+}
+
+.navBtn:active{
+  transform:scale(.97);
+  box-shadow:0 4px 10px rgba(74,144,226,0.3);
+}
+
+/* khusus logout */
+.navBtn.danger{
+  background:linear-gradient(135deg,#e74c3c,#ff8a7a);
+  box-shadow:0 6px 14px rgba(231,76,60,0.35);
+}
+
 </style>
 
 </head>
 
-<h1>💵 Kasir Proo</h1>
+<h1>💸 Kasir Proo</h1>
 
 <body>
 
 
 <div id="app">
 
-  <button onclick="window.location.href='dashboard.html'">
-  📊 Dashboard Stok
-</button>
+  <div class="topNav">
+  <button class="navBtn" onclick="window.location.href='dashboard.html'">
+    📊 Dashboard Stok
+  </button>
 
-  <button onclick="logout()" style="margin-left:10px;background:#e74c3c">
-      Logout
-    </button>
+  <button class="navBtn danger" onclick="logout()">
+    🏃 Logout
+  </button>
+</div>
     
   <div class="infoBox centerBox">
   💰 Penjualan Hari Ini :  <span id="totalHarian"> Rp 0</span>
