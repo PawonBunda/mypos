@@ -6,6 +6,8 @@
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4a90e2">
 
 <style>
 *{
@@ -15,7 +17,7 @@
 
 body{
   margin:0;
-  height:100vh;
+  min-height:100dvh;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -244,20 +246,15 @@ button{
   }
 }
 
-/* ===== FIX LANDSCAPE TERPOTONG TANPA UBAH DESAIN ===== */
-
-body{
-  min-height:100vh;   /* ganti pakai min-height */
-  height:auto;
-}
-
-@media (orientation: landscape){
+/* ===== SOLUSI FINAL LANDSCAPE HP TANPA SCROLL & TANPA POTONG ===== */
+@media (orientation: landscape) and (max-height:600px){
   body{
-    align-items:flex-start;  /* mulai dari atas */
-    padding:20px 0;
-    overflow-y:auto;         /* boleh scroll kalau kurang tinggi */
+    align-items:flex-start;
+    padding-top:12px;
   }
 }
+
+
 
 </style>
 </head>
@@ -375,6 +372,12 @@ function cekAdmin(){
   }else{
     showToast("Password admin salah","error");
   }
+}
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
 }
 </script>
 
