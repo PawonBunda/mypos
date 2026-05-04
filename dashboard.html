@@ -13,7 +13,31 @@ body{
   padding:20px;
 }
 
-h1{ margin-bottom:10px; }
+/* ===== JUDUL DASHBOARD ===== */
+
+h1{
+  font-size:30px;
+  font-weight:800;
+  letter-spacing:.6px;
+  color:#2c3e50;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:10px 0 18px;
+  position:relative;
+}
+
+/* garis aksen di bawah judul */
+h1::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-8px;
+  width:60px;
+  height:4px;
+  border-radius:4px;
+  background:linear-gradient(90deg,#4a90e2,#6fb1fc);
+}
 
 /* KPI */
 .kpi{
@@ -26,17 +50,22 @@ h1{ margin-bottom:10px; }
 .card{
   background:white;
   padding:15px;
+  text-align: center;
   border-radius:10px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  box-shadow:0 6px 18px rgba(0,0,0,0.10);
+  transition:.25s;
 }
 
 .card h2{
   margin:0;
   font-size:20px;
+  color:#2c3e50;
+
 }
 
 .card small{
   color:#888;
+  
 }
 
 /* TABLE */
@@ -148,6 +177,37 @@ td{
 .btn:active::after{
   opacity:0.2;
   transition:0s;
+}
+
+/* ===== TOMBOL HALAMAN KASIR ===== */
+
+button[onclick*="kasir.html"]{
+  background:linear-gradient(135deg,#3498db,#2c3e50);
+  color:white;
+  border:none;
+  padding:10px 18px;
+  border-radius:30px;
+  font-weight:600;
+  letter-spacing:.4px;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,0.18);
+  transition:.25s;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* efek hover naik */
+button[onclick*="kasir.html"]:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 25px rgba(0,0,0,0.25);
+  filter:brightness(1.08);
+}
+
+/* efek klik */
+button[onclick*="kasir.html"]:active{
+  transform:translateY(0);
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
 }
 
 </style>
