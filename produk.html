@@ -592,13 +592,6 @@ window.onload = function(){
 };
 
 // ================= AUTO DETECT BARCODE =================
-barcodeBaru.addEventListener("keydown", function(e){
-  if(e.key==="Enter"){
-    e.preventDefault();
-    autoDetectBarcode();
-  }
-});
-
 function autoDetectBarcode(){
 
   let kode = barcodeBaru.value.trim();
@@ -844,12 +837,6 @@ barcodeBaru.addEventListener("input", function () {
   }
 });
 
-barcodeBaru.addEventListener("keydown", function(e){
-  if(e.key === "Enter" || e.key === "Tab"){
-    e.preventDefault();
-    autoDetectBarcode();
-  }
-});
 
 barcodeBaru.addEventListener("click", function () {
   this.focus();
@@ -857,6 +844,15 @@ barcodeBaru.addEventListener("click", function () {
 
 let idleTimer;
 const IDLE_TIME = 10000; // ⬅️ atur di sini (ms)
+
+barcodeBaru.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    e.preventDefault();
+    autoDetectBarcode();
+  }
+});
+
+barcodeBaru.setAttribute("enterkeyhint", "go");
 
 function resetIdle(){
   clearTimeout(idleTimer);
@@ -868,12 +864,6 @@ function resetIdle(){
 
 // ===== ENTER BERANTAI FORM PRODUK =====
 
-barcodeBaru.addEventListener("keydown", function(e){
-  if(e.key==="Enter"){
-    e.preventDefault();
-    autoDetectBarcode();
-  }
-});
 
 // Enter di Nama -> ke Harga
 namaBaru.addEventListener("keydown", function(e){
