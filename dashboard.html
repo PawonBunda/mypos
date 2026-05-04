@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta charset="UTF-8">
 <title>Dashboard Stok PRO</title>
 
 <style>
+
+input{
+  font-size:16px;
+  padding:6px 8px; /* biar tetap ramping */
+}
 
 body{
   font-family: Arial;
@@ -215,10 +221,21 @@ button[onclick*="kasir.html"]:active{
 
 
 <button onclick="window.location.href='kasir.html'">
-  🧾 Halaman Kasir
+  💸 Halaman Kasir
 </button>
 
 <body>
+
+  <input id="scanDash" type="text" readonly
+style="
+position:fixed;
+top:0;
+left:0;
+opacity:0;
+height:1px;
+width:1px;
+border:none;
+z-index:-1;">
 
 <h1>📊 Dashboard Stok</h1>
 
@@ -411,6 +428,31 @@ function formatTanggal(tgl){
 }
 
 
+</script>
+
+<script>
+// ===== SCANNER MODE DASHBOARD (tanpa keyboard) =====
+const scanDash = document.getElementById("scanDash");
+
+function fokusScannerDash(){
+  scanDash.focus();
+}
+
+// fokus otomatis saat halaman buka
+window.addEventListener("load", fokusScannerDash);
+
+// setiap kali layar disentuh, balik fokus ke scanner
+document.addEventListener("touchstart", fokusScannerDash);
+
+// izinkan keyboard hanya kalau benar2 disentuh input
+scanDash.addEventListener("touchstart", () => {
+  scanDash.removeAttribute("readonly");
+});
+
+// setelah kehilangan fokus, kunci lagi
+scanDash.addEventListener("blur", () => {
+  scanDash.setAttribute("readonly", true);
+});
 </script>
 
 </body>
