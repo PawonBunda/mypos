@@ -51,9 +51,30 @@ input:focus{
 }
 
 /* CARD FORM INPUT */
+/* ===== JUDUL DASHBOARD ===== */
+
 h2{
-  margin-top: 20px;
-  color: #333;
+  font-size:30px;
+  font-weight:800;
+  letter-spacing:.6px;
+  color:#2c3e50;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:10px 0 18px;
+  position:relative;
+}
+
+/* garis aksen di bawah judul */
+h2::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-8px;
+  width:60px;
+  height:4px;
+  border-radius:4px;
+  background:linear-gradient(90deg,#4a90e2,#6fb1fc);
 }
 
 /* WRAPPER FORM BIAR LEBIH RAPI */
@@ -370,28 +391,71 @@ tbody tr{
   align-items:center;
 }
 
+/* ===== NAVIGATION BUTTON PREMIUM (SAMA SEPERTI HALAMAN KASIR) ===== */
+
+.navBar{
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+.navBtn{
+  padding:10px 16px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+  font-size:13px;
+  letter-spacing:.3px;
+  color:white;
+  background:linear-gradient(135deg,#3498db,#a6ccf3);
+  box-shadow:0 6px 14px rgba(74,144,226,0.35);
+  transition:all .2s ease;
+}
+
+.navBtn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 22px rgba(74,144,226,0.45);
+  filter:brightness(1.05);
+}
+
+.navBtn:active{
+  transform:scale(.97);
+  box-shadow:0 4px 10px rgba(74,144,226,0.3);
+}
+
+.listKasirLoading{
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(255,255,255,0.85);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  border-radius:12px;
+  font-weight:bold;
+  font-size:14px;
+  z-index:10;
+}
 </style>
 </head>
+<div class="navBar">
+  <button class="navBtn" onclick="window.location.href='index.html'">
+    🧾 Halaman Kasir
+  </button>
 
-<body>
+  <button class="navBtn" onclick="window.location.href='dashboard.html'">
+    📊 Dashboard Stok
+  </button>
 
-  <div>
-<button onclick="window.location.href='index.html'">
-  🧾 Halaman Kasir
-</button>
+  <button class="navBtn" onclick="bukaPopupKasir()">
+    👤 Tambah Kasir
+  </button>
 
-<button onclick="window.location.href='dashboard.html'">
-  📊 Dashboard Stok
-</button>
-
-<button onclick="bukaPopupKasir()">
-  👤 Tambah Kasir
-</button>
-
-<button onclick="bukaListKasir()">
-  📋 List Kasir
-</button>
-
+  <button class="navBtn" onclick="bukaListKasir()">
+    📋 List Kasir
+  </button>
 </div>
 
 
@@ -1120,6 +1184,8 @@ function hapusKasir(nama){
 
   showConfirm("Yakin mau hapus kasir " + nama + "?", function(){
 
+    showListKasirLoading(true);
+
     fetch(URL, {
       method: "POST",
       headers: {
@@ -1132,6 +1198,8 @@ function hapusKasir(nama){
     })
     .then(r => r.json())
     .then(res => {
+
+      showListKasirLoading(false);
 
       if(res.status === "OK"){
         showToast("Kasir berhasil dihapus 🗑","success");
@@ -1146,6 +1214,7 @@ function hapusKasir(nama){
 
     })
     .catch(() => {
+      showListKasirLoading(false);
       showToast("Gagal menghapus kasir ❌","error");
     });
 
@@ -1154,6 +1223,9 @@ function hapusKasir(nama){
 }
 
 function nonaktifKasir(nama){
+
+  showListKasirLoading(true);
+
   fetch(URL,{
     method:"POST",
     body:JSON.stringify({
@@ -1162,10 +1234,22 @@ function nonaktifKasir(nama){
       status:"TIDAK"
     })
   })
-  .then(()=> bukaListKasir());
+  .then(()=>{
+    showListKasirLoading(false);
+    bukaListKasir();
+    showToast("Kasir dinonaktifkan","info");
+  })
+  .catch(()=>{
+    showListKasirLoading(false);
+    showToast("Gagal proses","error");
+  });
+
 }
 
 function aktifKasir(nama){
+
+  showListKasirLoading(true);
+
   fetch(URL,{
     method:"POST",
     body:JSON.stringify({
@@ -1174,7 +1258,16 @@ function aktifKasir(nama){
       status:"YA"
     })
   })
-  .then(()=> bukaListKasir());
+  .then(()=>{
+    showListKasirLoading(false);
+    bukaListKasir();
+    showToast("Kasir diaktifkan","success");
+  })
+  .catch(()=>{
+    showListKasirLoading(false);
+    showToast("Gagal proses","error");
+  });
+
 }
 
 let confirmCallback = null;
@@ -1212,6 +1305,11 @@ window.addEventListener("load", () => {
   }
 
 });
+
+function showListKasirLoading(show=true){
+  const el = document.getElementById("listKasirLoading");
+  el.style.display = show ? "flex" : "none";
+}
 
 </script>
 
@@ -1293,7 +1391,12 @@ window.addEventListener("load", () => {
 </div>
 
 <div id="popupListKasir" class="modal">
-  <div class="modalBox">
+  <div class="modalBox" style="position:relative;">
+
+    <div id="listKasirLoading" class="kasirLoading">
+      ⏳ Memproses...
+    </div>
+
     <h3>List Kasir</h3>
 
     <div id="isiListKasir">
