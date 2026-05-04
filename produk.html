@@ -3,10 +3,9 @@ let detector = null;
 
 async function openCamera(){
 
-  const modal = document.getElementById("cameraModal");
-  const video = document.getElementById("video");
+  document.getElementById("cameraModal").style.display = "flex";
 
-  modal.style.display = "flex";
+  const video = document.getElementById("video");
 
   try {
 
@@ -15,22 +14,56 @@ async function openCamera(){
     });
 
     video.srcObject = videoStream;
-    await video.play();
+    video.play();
 
-    // cek support barcode
-    if (!('BarcodeDetector' in window)) {
-      showToast("Browser tidak support Barcode Scanner","error");
+    // Barcode Detector (Chrome Android)
+    if ('BarcodeDetector' in window) {
+      detector = new BarcodeDetector({ formats: ['ean_13','code_128','qr_code'] });
+
+      scanBarcode();
+    } 
+    else {
+      showToast("Browser tidak support scanner","error");
+    }
+
+  } catch (err){
+    showToast("Gagal akses kamera","error");
+  }
+}
+
+function closeCamera(){
+
+  document.getElementById("cameraModal").style.display = "none";
+
+  if(videoStream){
+    videoStream.getTracks().forEach(t => t.stop());
+  }
+}
+
+async function scanBarcode(){
+
+  const video = document.getElementById("video");
+
+  if(!detector) return;
+
+  try{
+
+    const barcodes = await detector.detect(video);
+
+    if(barcodes.length > 0){
+
+      let kode = barcodes[0].rawValue;
+
+      barcodeBaru.value = kode;
+
+      closeCamera();
+
+      autoDetectBarcode(); // langsung isi form
+
       return;
     }
 
-    detector = new BarcodeDetector({
-      formats: ['ean_13','code_128','qr_code','upc_a','upc_e']
-    });
+  } catch(e){}
 
-    scanLoop();
-
-  } catch (err){
-    console.error(err);
-    showToast("Gagal membuka kamera","error");
-  }
+  requestAnimationFrame(scanBarcode);
 }
