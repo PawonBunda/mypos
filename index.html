@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <title>Login Kasir</title>
 
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 *{
   box-sizing:border-box;
@@ -219,6 +222,41 @@ button{
 .toast.success{
   border-left:6px solid #2ecc71;
   color:#27ae60;
+}
+
+/* ===== RESPONSIVE TANPA UBAH DESAIN ===== */
+
+.box{
+  width: 90%;
+  max-width: 390px; /* ukuran asli tetap */
+}
+
+@media (max-width: 480px){
+  .box{
+    width: 92%;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 900px){
+  .box{
+    width: 70%;
+    max-width: 450px;
+  }
+}
+
+/* ===== FIX LANDSCAPE TERPOTONG TANPA UBAH DESAIN ===== */
+
+body{
+  min-height:100vh;   /* ganti pakai min-height */
+  height:auto;
+}
+
+@media (orientation: landscape){
+  body{
+    align-items:flex-start;  /* mulai dari atas */
+    padding:20px 0;
+    overflow-y:auto;         /* boleh scroll kalau kurang tinggi */
+  }
 }
 
 </style>
