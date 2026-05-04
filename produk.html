@@ -482,6 +482,7 @@ tbody tr{
 <div class="formBar">
 
   <div style="display:flex; gap:6px; align-items:center;">
+  <button type="button" onclick="openCamera()">📷</button>
   <input id="barcodeBaru" placeholder="Barcode" style="flex:1;" autocomplete="off">
   <button type="button" onclick="resetBarcode()">↺</button>
 </div>
@@ -1335,6 +1336,76 @@ barcodeBaru.setAttribute("autocomplete", "off");
 barcodeBaru.setAttribute("autocorrect", "off");
 barcodeBaru.setAttribute("autocapitalize", "off");
 
+let videoStream = null;
+let detector = null;
+
+async function openCamera(){
+
+  document.getElementById("cameraModal").style.display = "flex";
+
+  const video = document.getElementById("video");
+
+  try {
+
+    videoStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" }
+    });
+
+    video.srcObject = videoStream;
+    video.play();
+
+    // Barcode Detector (Chrome Android)
+    if ('BarcodeDetector' in window) {
+      detector = new BarcodeDetector({ formats: ['ean_13','code_128','qr_code'] });
+
+      scanBarcode();
+    } 
+    else {
+      showToast("Browser tidak support scanner","error");
+    }
+
+  } catch (err){
+    showToast("Gagal akses kamera","error");
+  }
+}
+
+function closeCamera(){
+
+  document.getElementById("cameraModal").style.display = "none";
+
+  if(videoStream){
+    videoStream.getTracks().forEach(t => t.stop());
+  }
+}
+
+async function scanBarcode(){
+
+  const video = document.getElementById("video");
+
+  if(!detector) return;
+
+  try{
+
+    const barcodes = await detector.detect(video);
+
+    if(barcodes.length > 0){
+
+      let kode = barcodes[0].rawValue;
+
+      barcodeBaru.value = kode;
+
+      closeCamera();
+
+      autoDetectBarcode(); // langsung isi form
+
+      return;
+    }
+
+  } catch(e){}
+
+  requestAnimationFrame(scanBarcode);
+}
+
 </script>
 
 <div id="toast"></div>
@@ -1442,6 +1513,17 @@ barcodeBaru.setAttribute("autocapitalize", "off");
       <button id="btnConfirmYes" style="background:#e74c3c;">Ya, Hapus</button>
       <button onclick="tutupConfirm()">Batal</button>
     </div>
+  </div>
+</div>
+
+<div id="cameraModal" class="modal" style="display:none;">
+  <div class="modalBox" style="text-align:center;">
+    <h3>Scan Barcode</h3>
+
+    <video id="video" style="width:100%; border-radius:10px;"></video>
+
+    <br><br>
+    <button onclick="closeCamera()" style="background:#e74c3c;">Tutup</button>
   </div>
 </div>
 
