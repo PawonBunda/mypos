@@ -488,6 +488,9 @@ input{
   <button class="navBtn danger" onclick="logout()">
     🏃 Logout
   </button>
+
+  <button onclick="bukaSettingToko()">⚙ Setting Toko</button>
+
 </div>
     
   <div class="infoBox centerBox">
@@ -873,56 +876,67 @@ function tutupPopup(){
 // CETAK + KIRIM SHEET (FINAL)
 function cetakStrukFinal(){
 
-  // ====== BUAT ISI STRUK ======
-  let html = `<div>
-  <h3>STRUK</h3>
-  Kasir: ${kasir}<br>
-  ${tgl.innerText} ${jam.innerText}<hr>`;
+  // ===== AMBIL SETTING TOKO =====
+  let namaToko   = localStorage.getItem("namaToko")   || "";
+  let alamatToko = localStorage.getItem("alamatToko") || "";
+  let hpToko     = localStorage.getItem("hpToko")     || "";
 
+  // ===== FORMAT STRUK TEXT (MONOSPACE) =====
+  let struk = "";
+
+  struk += "================================\n";
+  struk += "         " + namaToko.toUpperCase() + "\n";
+  if(alamatToko) struk += "  " + alamatToko + "\n";
+  if(hpToko)     struk += "  HP: " + hpToko + "\n";
+  struk += "================================\n";
+  struk += "Kasir : " + kasir + "\n";
+  struk += tgl.innerText + " " + jam.innerText + "\n";
+  struk += "--------------------------------\n";
+
+  // ===== LIST PRODUK =====
   for(let k in cart){
     let p = cart[k];
-    html += `${p.nama_produk}<br>
-             ${p.qty} x ${rupiah(p.harga)}<br>`;
+    let nama = p.nama_produk.substring(0,20);
+    let qtyHarga = `${p.qty} x ${rupiah(p.harga)}`;
+    let subtotal = rupiah(p.qty * p.harga);
+
+    struk += nama + "\n";
+    struk += qtyHarga.padEnd(22," ") + subtotal + "\n";
   }
 
-  html += `<hr>
-  Total: ${rupiah(total)}<br>
-  Bayar: ${rupiah(uangBayar)}<br>
-  Kembali: ${rupiah(uangBayar-total)}
-  </div>`;
+  struk += "--------------------------------\n";
+  struk += "TOTAL     : " + rupiah(total) + "\n";
+  struk += "BAYAR     : " + rupiah(uangBayar) + "\n";
+  struk += "KEMBALI   : " + rupiah(uangBayar-total) + "\n";
+  struk += "================================\n";
+  struk += "   Terima kasih sudah belanja\n";
+  struk += "================================\n";
 
-  // ====== TAMPILKAN KE AREA PRINT ======
-  printArea.innerHTML = html;
+  // ===== MASUKKAN KE AREA PRINT =====
+  printArea.innerHTML = `<pre style="font-family:monospace;font-size:12px">${struk}</pre>`;
 
-  // ====== PRINT ======
+  // ===== PRINT (Bluetooth / USB / HP) =====
   window.print();
 
-  // ====== KIRIM KE GOOGLE SHEET ======
+  // ===== KIRIM KE GOOGLE SHEET =====
   kirimTransaksi(uangBayar);
 
-  // ====== RESET SEMUA SETELAH TRANSAKSI ======
+  // ===== RESET SETELAH TRANSAKSI =====
   setTimeout(()=>{
 
-    // Kosongkan cart
     cart = {};
     render();
     loadTotalHarian();
 
-    // Reset input bayar & kembalian
     bayar.value = "";
     kembalianEl.innerText = "Rp 0";
 
-    // Tutup popup
     popup.style.display = "none";
-
-    // Bersihkan area print
     printArea.innerHTML = "";
 
-    // 🔥 Kosongkan pencarian produk
     cariNama.value = "";
     hasilCari.innerHTML = "";
 
-    // 🔥 Fokus balik ke scan barcode
     scan.focus();
 
   },500);
@@ -1033,6 +1047,57 @@ function resetIdle(){
   }, IDLE_TIME);
 }
 
+function bukaSettingToko(){
+  settingTokoPopup.style.display = "flex";
+
+  setNamaToko.value = localStorage.getItem("namaToko") || "";
+  setAlamatToko.value = localStorage.getItem("alamatToko") || "";
+  setHpToko.value = localStorage.getItem("hpToko") || "";
+}
+
+function tutupSettingToko(){
+  settingTokoPopup.style.display = "none";
+}
+
+function simpanSettingToko(){
+  localStorage.setItem("namaToko", setNamaToko.value);
+  localStorage.setItem("alamatToko", setAlamatToko.value);
+  localStorage.setItem("hpToko", setHpToko.value);
+
+  alert("Setting toko disimpan!");
+  tutupSettingToko();
+}
+
+const PIN_SETTING = "12345";
+
+function bukaSettingToko(){
+  let pin = prompt("Masukkan PIN Setting:");
+  if(pin !== PIN_SETTING){
+    alert("PIN Salah!");
+    return;
+  }
+
+  // isi field dari localStorage
+  namaTokoInput.value   = localStorage.getItem("namaToko") || "";
+  alamatTokoInput.value = localStorage.getItem("alamatToko") || "";
+  hpTokoInput.value     = localStorage.getItem("hpToko") || "";
+
+  settingPopup.style.display = "flex";
+}
+
+function tutupSettingToko(){
+  settingPopup.style.display = "none";
+}
+
+function simpanSettingToko(){
+  localStorage.setItem("namaToko", namaTokoInput.value);
+  localStorage.setItem("alamatToko", alamatTokoInput.value);
+  localStorage.setItem("hpToko", hpTokoInput.value);
+
+  alert("Setting toko disimpan!");
+  tutupSettingToko();
+}
+
 document.addEventListener("keydown", resetIdle);
 document.addEventListener("mousemove", resetIdle);
 document.addEventListener("click", resetIdle);
@@ -1045,6 +1110,19 @@ bayar.addEventListener("input", resetIdle);
   <div class="alertContent">
     <div id="alertIcon">⚠️</div>
     <div id="alertText">Pesan</div>
+  </div>
+</div>
+
+<div id="settingPopup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);justify-content:center;align-items:center;z-index:9999">
+  <div style="background:white;padding:20px;border-radius:12px;width:320px">
+    <h3>Setting Toko</h3>
+
+    <input id="namaTokoInput" placeholder="Nama Toko"><br>
+    <input id="alamatTokoInput" placeholder="Alamat"><br>
+    <input id="hpTokoInput" placeholder="No HP"><br><br>
+
+    <button onclick="simpanSettingToko()">💾 Simpan</button>
+    <button onclick="tutupSettingToko()">❌ Tutup</button>
   </div>
 </div>
 
