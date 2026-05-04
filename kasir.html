@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
 <head>
 <meta charset="UTF-8">
 <title>TOKO PAKAIAN</title>
 
 <style>
+
+    input{
+  font-size:16px;
+  padding:6px 8px; /* biar tetap ramping */
+}
+
 body{
   font-family: Arial, sans-serif;
   margin: 0;
@@ -597,6 +606,10 @@ const bayar = document.getElementById("bayar");
 const cariNama = document.getElementById("cariNama");
 const app = document.getElementById("app");
 
+scan.addEventListener("touchstart", () => {
+  scan.removeAttribute("readonly");
+});
+
 const popup = document.getElementById("popup");
 const popupBox = document.getElementById("popupBox");
 const popupDetail = document.getElementById("popupDetail");
@@ -1031,8 +1044,13 @@ document.addEventListener("keydown", function(e){
 function fokusScan(){
   if (popup.style.display === "flex") return;
 
-  setTimeout(() => {
-    scan.focus();
+  // bikin readonly dulu supaya keyboard tidak muncul
+  scan.setAttribute("readonly", true);
+  scan.focus();
+
+  // setelah fokus, baru hilangkan readonly
+  setTimeout(()=>{
+    scan.removeAttribute("readonly");
   }, 100);
 }
 
