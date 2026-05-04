@@ -830,13 +830,16 @@ namaBaru.addEventListener("input", function () {
 function fokusBarcode(){
   if (popup.style.display === "flex") return;
 
-  // hanya fokus kalau user memang tidak sedang isi field lain
-  const aktif = document.activeElement;
+  // fokus TANPA memunculkan keyboard
+  barcodeBaru.blur();
 
-  if (aktif === barcodeBaru) return;
-
-  barcodeBaru.focus();
+  // kasih indikator visual saja (opsional)
+  barcodeBaru.classList.add("auto-focus");
 }
+
+barcodeBaru.addEventListener("click", function () {
+  this.focus();
+});
 
 let idleTimer;
 const IDLE_TIME = 10000; // ⬅️ atur di sini (ms)
