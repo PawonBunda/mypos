@@ -586,21 +586,21 @@ tbody tr{
 <script>
 
 const barcodeBaru = document.getElementById("barcodeBaru");
-// keyboard hanya muncul saat benar-benar disentuh user
-barcodeBaru.addEventListener("touchstart", function(){
-  this.removeAttribute("readonly");
-});
 
-barcodeBaru.addEventListener("blur", function(){
-  this.setAttribute("readonly", true);
-});
+// ✅ TAMBAHAN INI
+barcodeBaru.removeAttribute("readonly");
+barcodeBaru.setAttribute("inputmode", "numeric");
+barcodeBaru.setAttribute("autocomplete", "off");
+barcodeBaru.setAttribute("autocorrect", "off");
+barcodeBaru.setAttribute("autocapitalize", "off");
+// keyboard hanya muncul saat benar-benar disentuh user
 
 const namaBaru = document.getElementById("namaBaru");
 const hargaBaru = document.getElementById("hargaBaru");
 const stokBaru = document.getElementById("stokBaru");
 const popup = document.getElementById("popup");
 
-const URL="https://script.google.com/macros/s/AKfycbyDV2fXvon271SjTkhwHLdKJPNTl_YOMaLl3OuqEX4VrRVfRuElgLTUJIzInjCMCzGtag/exec";
+const URL="https://script.google.com/macros/s/AKfycbyPUaiYnUXpnvV_sZCwKqG9Yg49MLfVKCSSWXwvPE6_YqN5V8_CZ6q0wmgmkRSiXU3Lkg/exec";
 
 let semuaProduk=[];
 let barcodeEdit="";
@@ -880,10 +880,8 @@ namaBaru.addEventListener("input", function () {
 function fokusBarcode(){
   if (popup.style.display === "flex") return;
 
-  barcodeBaru.setAttribute("readonly", true);
-
-  // trik supaya cursor tetap ada tapi keyboard tidak muncul
-  barcodeBaru.blur();
+  barcodeBaru.removeAttribute("readonly");
+  barcodeBaru.focus();
 }
 
 barcodeBaru.addEventListener("input", function () {
