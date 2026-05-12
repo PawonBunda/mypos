@@ -586,6 +586,15 @@ tbody tr{
 <script>
 
 const barcodeBaru = document.getElementById("barcodeBaru");
+// keyboard hanya muncul saat benar-benar disentuh user
+barcodeBaru.addEventListener("touchstart", function(){
+  this.removeAttribute("readonly");
+});
+
+barcodeBaru.addEventListener("blur", function(){
+  this.setAttribute("readonly", true);
+});
+
 const namaBaru = document.getElementById("namaBaru");
 const hargaBaru = document.getElementById("hargaBaru");
 const stokBaru = document.getElementById("stokBaru");
@@ -871,9 +880,10 @@ namaBaru.addEventListener("input", function () {
 function fokusBarcode(){
   if (popup.style.display === "flex") return;
 
-  setTimeout(() => {
-    barcodeBaru.focus();
-  }, 50);
+  barcodeBaru.setAttribute("readonly", true);
+
+  // trik supaya cursor tetap ada tapi keyboard tidak muncul
+  barcodeBaru.blur();
 }
 
 barcodeBaru.addEventListener("input", function () {
