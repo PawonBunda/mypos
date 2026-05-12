@@ -494,7 +494,7 @@ tbody tr{
 
 </div>
 
-<h2>📦 Daftar Produk</h2>
+<h2>📦 Daftar Produ</h2>
 
 <div class="searchBar">
   <div class="filterButtons">
@@ -1342,31 +1342,76 @@ let detector = null;
 async function openCamera(){
 
   document.getElementById("cameraModal").style.display = "flex";
-
   const video = document.getElementById("video");
 
   try {
 
     videoStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" }
+      video: {
+        facingMode: { ideal: "environment" },
+
+        // 🔥 ini kunci kualitas scan
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+
+        focusMode: "continuous",
+        zoom: true,
+        torch: false
+      }
     });
 
     video.srcObject = videoStream;
-    video.play();
+    await video.play();
 
-    // Barcode Detector (Chrome Android)
+    // ===== PAKSA AUTOFOCUS & SHARPNESS =====
+    const track = videoStream.getVideoTracks()[0];
+    const capabilities = track.getCapabilities();
+
+    if (capabilities.focusMode) {
+      track.applyConstraints({
+        advanced: [{ focusMode: "continuous" }]
+      });
+    }
+
+    if (capabilities.zoom) {
+      track.applyConstraints({
+        advanced: [{ zoom: capabilities.zoom.max }]
+      });
+    }
+
+    // Barcode detector
     if ('BarcodeDetector' in window) {
-      detector = new BarcodeDetector({ formats: ['ean_13','code_128','qr_code'] });
+      detector = new BarcodeDetector({
+        formats: ['ean_13','code_128']
+      });
 
       scanBarcode();
-    } 
-    else {
+    } else {
       showToast("Browser tidak support scanner","error");
     }
 
   } catch (err){
     showToast("Gagal akses kamera","error");
   }
+}
+
+function beep(){
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = "sine";
+  osc.frequency.value = 1000;
+  gain.gain.value = 0.2;
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start();
+  setTimeout(()=>{
+    osc.stop();
+    ctx.close();
+  }, 120);
 }
 
 function closeCamera(){
@@ -1378,30 +1423,53 @@ function closeCamera(){
   }
 }
 
+let lastScan = "";
+let scanLock = false;
+
 async function scanBarcode(){
 
-  const video = document.getElementById("video");
-
-  if(!detector) return;
+  if(!detector || scanLock) {
+    requestAnimationFrame(scanBarcode);
+    return;
+  }
 
   try{
-
+    const video = document.getElementById("video");
     const barcodes = await detector.detect(video);
 
     if(barcodes.length > 0){
 
       let kode = barcodes[0].rawValue;
 
+      // 🔥 filter biar tidak salah baca noise
+      if(kode.length < 8) {
+        requestAnimationFrame(scanBarcode);
+        return;
+      }
+
+      // 🔥 cegah double scan cepat
+      if(kode === lastScan) {
+        requestAnimationFrame(scanBarcode);
+        return;
+      }
+
+      lastScan = kode;
+      scanLock = true;
+
+      beep(); // 🔊 bunyi
+
       barcodeBaru.value = kode;
 
-      closeCamera();
-
-      autoDetectBarcode(); // langsung isi form
+      setTimeout(()=>{
+        closeCamera();
+        autoDetectBarcode();
+        scanLock = false;
+      }, 300);
 
       return;
     }
 
-  } catch(e){}
+  }catch(e){}
 
   requestAnimationFrame(scanBarcode);
 }
