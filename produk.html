@@ -1436,7 +1436,16 @@ async function openCamera(){
     // start detector
     if ('BarcodeDetector' in window) {
       detector = new BarcodeDetector({
-        formats: ['ean_13','code_128']
+        formats: [
+          'ean_13',
+          'ean_8',
+          'upc_a',
+          'upc_e',
+          'code_128',
+          'code_39',
+          'qr_code',
+          'itf'
+        ]
       });
       scanBarcode();
     } else {
