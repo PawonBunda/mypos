@@ -494,7 +494,7 @@ tbody tr{
 
 </div>
 
-<h2>📦 Daftar Produ</h2>
+<h2>📦 Daftar Produk</h2>
 
 <div class="searchBar">
   <div class="filterButtons">
@@ -1350,36 +1350,30 @@ async function openCamera(){
       video: {
         facingMode: { ideal: "environment" },
 
-        // 🔥 ini kunci kualitas scan
-        width: { ideal: 1920 },
-        height: { ideal: 1080 },
+        // jangan pakai resolusi aneh, biar kamera stabil
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
 
-        focusMode: "continuous",
-        zoom: true,
-        torch: false
+        // 🔥 INI KUNCI NYA
+        focusMode: "continuous"
       }
     });
 
     video.srcObject = videoStream;
     await video.play();
 
-    // ===== PAKSA AUTOFOCUS & SHARPNESS =====
+    // ===== PAKSA AUTO FOCUS TANPA ZOOM =====
     const track = videoStream.getVideoTracks()[0];
     const capabilities = track.getCapabilities();
 
     if (capabilities.focusMode) {
-      track.applyConstraints({
+      await track.applyConstraints({
         advanced: [{ focusMode: "continuous" }]
       });
     }
 
-    if (capabilities.zoom) {
-      track.applyConstraints({
-        advanced: [{ zoom: capabilities.zoom.max }]
-      });
-    }
+    // JANGAN ADA zoom, JANGAN ADA width 1920, JANGAN torch
 
-    // Barcode detector
     if ('BarcodeDetector' in window) {
       detector = new BarcodeDetector({
         formats: ['ean_13','code_128']
@@ -1441,13 +1435,11 @@ async function scanBarcode(){
 
       let kode = barcodes[0].rawValue;
 
-      // 🔥 filter biar tidak salah baca noise
       if(kode.length < 8) {
         requestAnimationFrame(scanBarcode);
         return;
       }
 
-      // 🔥 cegah double scan cepat
       if(kode === lastScan) {
         requestAnimationFrame(scanBarcode);
         return;
@@ -1456,7 +1448,7 @@ async function scanBarcode(){
       lastScan = kode;
       scanLock = true;
 
-      beep(); // 🔊 bunyi
+      beep(); // bunyi
 
       barcodeBaru.value = kode;
 
@@ -1464,7 +1456,7 @@ async function scanBarcode(){
         closeCamera();
         autoDetectBarcode();
         scanLock = false;
-      }, 300);
+      }, 250);
 
       return;
     }
