@@ -1811,6 +1811,54 @@ function setButtonLoading(btn, state, textLoading="Memuat..."){
   }
 }
 
+function bukaSettingToko(){
+
+  showModal("🔐 Masukkan PIN", `
+    <input id="pinSettingInput" type="password"
+      placeholder="Masukkan PIN"
+      style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px">
+  `, [
+    {
+      text: "Batal"
+    },
+    {
+      text: "Lanjut",
+      onClick: ()=>{
+        const pin = document.getElementById("pinSettingInput").value;
+
+        if(pin !== PIN_SETTING){
+          showAlert("PIN salah!", "error");
+          return;
+        }
+
+        namaTokoInput.value   = localStorage.getItem("namaToko") || "";
+        alamatTokoInput.value = localStorage.getItem("alamatToko") || "";
+        hpTokoInput.value     = localStorage.getItem("hpToko") || "";
+
+        settingPopup.style.display = "flex";
+      }
+    }
+  ]);
+
+  // 🔥 INI TARUH DI SINI (DI LUAR ARRAY & DI LUAR showModal)
+  setTimeout(()=>{
+    const input = document.getElementById("pinSettingInput");
+    if(input){
+      input.focus();
+      input.select();
+    }
+  }, 100);
+}
+
+function simpanSettingToko(){
+  localStorage.setItem("namaToko", namaTokoInput.value);
+  localStorage.setItem("alamatToko", alamatTokoInput.value);
+  localStorage.setItem("hpToko", hpTokoInput.value);
+
+  showAlert("Setting toko berhasil disimpan!", "success");
+  tutupSettingToko();
+}
+
 const kasirName = document.getElementById("kasirName");
 const tgl = document.getElementById("tgl");
 const jam = document.getElementById("jam");
