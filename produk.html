@@ -465,10 +465,31 @@ tbody tr{
   box-shadow: 0 10px 30px rgba(0,0,0,.4);
 }
 
+.video-wrap{
+  position: relative;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
 #video{
   width: 100%;
-  height: 240px;      /* 🔥 pendek, fokus area tengah */
+  height: 100%;
   object-fit: cover;
+  display:block;
+}
+
+.scan-line{
+  position:absolute;
+  left:6%;
+  width:88%;
+  height:3px;
+  background:red;
+  top:50%;
+  transform:translateY(-50%);
+  box-shadow:0 0 10px red;
+  pointer-events:none;
 }
 
 </style>
@@ -1462,19 +1483,19 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 
 async function scanBarcode(){
-  if(!detector) {
+  if(!detector){
     requestAnimationFrame(scanBarcode);
     return;
   }
 
   const video = document.getElementById("video");
 
-  // ambil area tengah saja (fokus ke barcode)
   const w = video.videoWidth;
   const h = video.videoHeight;
 
-  const cropW = w * 0.6;
-  const cropH = h * 0.3;
+  // 🔥 garis tipis di tengah (seperti scanner kasir)
+  const cropW = w * 0.9;
+  const cropH = h * 0.12;   // tipis!
   const cropX = (w - cropW) / 2;
   const cropY = (h - cropH) / 2;
 
@@ -1483,11 +1504,12 @@ async function scanBarcode(){
 
   ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
 
-  try {
+  try{
     const barcodes = await detector.detect(canvas);
 
     if(barcodes.length){
       let kode = barcodes[0].rawValue;
+
       if(kode.length >= 8){
         beep();
         barcodeBaru.value = kode;
@@ -1496,7 +1518,7 @@ async function scanBarcode(){
         return;
       }
     }
-  } catch(e){}
+  }catch(e){}
 
   requestAnimationFrame(scanBarcode);
 }
@@ -1614,9 +1636,10 @@ async function scanBarcode(){
 <div id="cameraModal" class="modal" style="display:none;">
   <div class="modalBox" style="text-align:center;">
     <h3>Scan Barcode</h3>
-
-    <video id="video" autoplay playsinline></video>
-
+    <div class="video-wrap">
+      <video id="video" autoplay playsinline></video>
+      <div class="scan-line"></div>
+    </div>
     <br><br>
     <button onclick="closeCamera()" style="background:#e74c3c;">Tutup</button>
   </div>
