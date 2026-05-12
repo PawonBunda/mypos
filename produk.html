@@ -1349,36 +1349,44 @@ async function openCamera(){
     videoStream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: { ideal: "environment" },
-
-        // jangan pakai resolusi aneh, biar kamera stabil
         width: { ideal: 1280 },
-        height: { ideal: 720 },
-
-        // 🔥 INI KUNCI NYA
-        focusMode: "continuous"
+        height: { ideal: 720 }
       }
     });
 
     video.srcObject = videoStream;
     await video.play();
 
-    // ===== PAKSA AUTO FOCUS TANPA ZOOM =====
+    // ===== AUTOFOCUS SEBENARNYA =====
     const track = videoStream.getVideoTracks()[0];
-    const capabilities = track.getCapabilities();
+    const cap = track.getCapabilities();
 
-    if (capabilities.focusMode) {
-      await track.applyConstraints({
-        advanced: [{ focusMode: "continuous" }]
-      });
+    let advanced = [];
+
+    // unlock exposure dulu
+    if (cap.exposureMode) {
+      advanced.push({ exposureMode: "continuous" });
     }
 
-    // JANGAN ADA zoom, JANGAN ADA width 1920, JANGAN torch
+    // reset focus distance (WAJIB)
+    if (cap.focusDistance) {
+      advanced.push({ focusDistance: 0 });
+    }
 
+    // baru autofocus hidup
+    if (cap.focusMode) {
+      advanced.push({ focusMode: "continuous" });
+    }
+
+    if (advanced.length) {
+      await track.applyConstraints({ advanced });
+    }
+
+    // start detector
     if ('BarcodeDetector' in window) {
       detector = new BarcodeDetector({
         formats: ['ean_13','code_128']
       });
-
       scanBarcode();
     } else {
       showToast("Browser tidak support scanner","error");
