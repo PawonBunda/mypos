@@ -476,6 +476,265 @@ input{
   box-shadow:0 6px 14px rgba(231,76,60,0.35);
 }
 
+/* ===== METODE PEMBAYARAN MODERN ===== */
+.metodeWrap{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.metodeBtn{
+  padding:12px;
+  border-radius:10px;
+  border:2px solid #dfe6f1;
+  background:#f7f9fc;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+  font-size:13px;
+}
+
+.metodeBtn:hover{
+  transform:translateY(-2px);
+}
+
+.metodeBtn.active{
+  border-color:#4a90e2;
+  background:linear-gradient(135deg,#4a90e2,#6fb1fc);
+  color:white;
+  box-shadow:0 8px 18px rgba(74,144,226,.35);
+}
+
+/* ===== METODE WARP ===== */
+.metodeWarp{
+  position:relative;
+  margin-bottom:10px;
+}
+
+#metodeBtnUtama{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+  color:white;
+  background:linear-gradient(135deg,#4a90e2,#6fb1fc);
+  box-shadow:0 8px 18px rgba(74,144,226,.35);
+}
+
+.metodeMenu{
+  position:absolute;
+  top:110%;
+  left:0;
+  right:0;
+  background:white;
+  border-radius:10px;
+  box-shadow:0 12px 25px rgba(0,0,0,.15);
+  overflow:hidden;
+  display:none;
+  z-index:99;
+}
+
+.metodeMenu div{
+  padding:12px;
+  cursor:pointer;
+  font-weight:600;
+  border-bottom:1px solid #eee;
+}
+
+.metodeMenu div:hover{
+  background:#f2f6ff;
+}
+
+/* ===== DATE TIME VERTIKAL RINGKAS ===== */
+
+.posDateTime{
+  margin-left:auto;
+  display:flex;
+  flex-direction:column;   /* ← bikin tgl di atas, jam di bawah */
+  gap:6px;
+  align-items:flex-end;
+}
+
+.dateBox, .timeBox{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:600;
+  box-shadow:0 4px 10px rgba(0,0,0,.06);
+  min-width:140px;
+  justify-content:center;
+}
+
+.dateBox{
+  background:#ffffff;
+  border:1px solid #dfe8ff;
+  color:#333;
+}
+
+.timeBox{
+  background:#4a90e2;
+  color:white;
+}
+
+.label{
+  font-size:10px;
+  opacity:.7;
+  font-weight:500;
+}
+
+.value{
+  font-size:13px;
+  font-weight:700;
+}
+
+.holdBar{
+  display:flex;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.holdBar button{
+  padding:8px 14px;
+  border:none;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+  color:#fff;
+  font-size:13px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
+  transition:0.2s;
+}
+
+/* Tahan */
+#btnHold{
+  background:linear-gradient(135deg,#3b82f6,#2563eb);
+}
+
+#btnHold:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 14px rgba(0,0,0,0.2);
+}
+
+/* Ambil */
+#btnRecall{
+  background:linear-gradient(135deg,#f59e0b,#d97706);
+}
+
+#btnRecall:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 14px rgba(0,0,0,0.2);
+}
+
+.holdBar button:hover{
+  background:#dfe8ff;
+}
+
+.pos-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.pos-modal-box{
+  background:white;
+  width:320px;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  animation:pop .15s ease;
+}
+
+@keyframes pop{
+  from{transform:scale(.9);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+.pos-modal-title{
+  font-weight:700;
+  margin-bottom:10px;
+  font-size:18px;
+}
+
+.pos-modal-body{
+  margin-bottom:15px;
+  font-size:14px;
+}
+
+.pos-modal-actions{
+  text-align:right;
+}
+
+.pos-modal-actions button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin-left:6px;
+  cursor:pointer;
+  background:#4f7cff;
+  color:white;
+  font-weight:600;
+}
+
+.loader{
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255,255,255,0.3);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin{
+  0%{ transform: rotate(0deg); }
+  100%{ transform: rotate(360deg); }
+}
+
+body.loading #app{
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.btn-loading::after {
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spinBtn 0.7s linear infinite;
+}
+
+@keyframes spinBtn {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.btn-loading {
+  opacity: 0.85;
+  pointer-events: none;
+}
+
 </style>
 
 </head>
@@ -515,16 +774,22 @@ input{
   
   <div class="kasirItem">
     👤 Kasir: <span id="kasirName">-</span>
+    <div id="totalKasirHariIni" style="margin-top:6px;font-weight:bold;color:#2e7d32">
+  Penjualan Anda Hari Ini: Rp 0
+</div>
+    <button id="btnClosing" onclick="closingShift()">🧾 Closing Shift</button>
   </div>
 
-  <div class="rightClock">
-    <div class="clockItem">
-      📅 <span id="tgl"></span>
-    </div>
-    <div class="clockItem time">
-      ⏰ <span id="jam"></span>
-    </div>
+  <div class="posDateTime">
+  <div class="dateBox">
+    <div class="label">📆</div>
+    <div id="tgl" class="value"></div>
   </div>
+  <div class="timeBox">
+    <div class="label">🕘</div>
+    <div id="jam" class="value"></div>
+  </div>
+</div>
 
 </div>
 
@@ -549,6 +814,11 @@ input{
     <!-- KANAN (CART) -->
     <div id="rightPanel">
 
+      <div class="holdBar">
+        <button id="btnHold">⏸️ Tahan</button>
+        <button id="btnRecall">📂 Ambil</button>
+      </div>
+
       <h3>Cart</h3>
 
       <table>
@@ -562,13 +832,28 @@ input{
 
       <div class="total">Total: <span id="total">Rp 0</span></div>
 
-      <input id="bayar" type="number" placeholder="Uang Bayar">
+      <h3>Metode Pembayaran</h3>
+
+        <div class="metodeWarp">
+  <button id="metodeBtnUtama" onclick="toggleMetodeMenu()">💵 Tunai</button>
+
+        <div id="metodeMenu" class="metodeMenu">
+          <div onclick="pilihMetode('TUNAI','💵 Tunai')">💵 Tunai</div>
+          <div onclick="pilihMetode('QRIS','📱 QRIS')">📱 QRIS</div>
+          <div onclick="pilihMetode('DEBIT','💳 Debit')">💳 Debit</div>
+          <div onclick="pilihMetode('TRANSFER','🏦 Transfer')">🏦 Transfer</div>
+        </div>
+      </div>
+
+      <input id="bayar" type="text" placeholder="Rp 0">
       <button type="button" onclick="bayarTransaksi()">Bayar</button>
 
       <div class="total">Kembalian: <span id="kembalian">Rp 0</span></div>
+      <button id="btnReprint">🧾 Cetak Ulang struk</button>
+      
 
     </div>
-
+    
   </div>
 
 </div>
@@ -618,9 +903,9 @@ const printArea = document.getElementById("printArea");
 
 
 
-const URL="https://script.google.com/macros/s/AKfycbx8bgj-LJumZDGnzDAcN5_XLTe8D-YyWHQAuIfAawYVmVjvuDZXrHIuEvvYySQ4AlbBRQ/exec";
+const URL="https://script.google.com/macros/s/AKfycbwtwFOVlpmsCXfqIQA-4W4xfSEA6WAkplZUWcMP9fDnmkf_73U8VFtQC2EjT770XOvW0A/exec";
 
-let produkDB={}, produkList=[], cart={}, kasir="", total=0, uangBayar=0;
+let produkDB={}, produkList=[], cart={}, kasir="", total=0, uangBayar=0, metodeBayar="TUNAI";
 
 
 const totalEl=document.getElementById("total");
@@ -704,6 +989,8 @@ window.onload = function(){
 
   kasir = savedKasir;
   kasirName.innerText = kasir;
+
+  loadTotalKasir();   // ✅ TAMBAH DI SINI
 
   fokusScan();
   loadProduk();
@@ -822,7 +1109,8 @@ function render(){
 }
 
 function updateKembalian(){
-  let uang = parseInt(bayar.value || 0);
+  let angka = bayar.value.replace(/\D/g,'');
+  let uang = parseInt(angka || 0);
   let kembali = uang - total;
 
   if(kembali <= 0){
@@ -840,23 +1128,41 @@ function hapusItem(k){
 // BAYAR → POPUP
 function bayarTransaksi(){
 
-  // 🚫 CEK CART KOSONG
   if(Object.keys(cart).length === 0){
     showAlert("Cart masih kosong!","warning");
     scan.focus();
     return;
   }
 
-  let uang=parseInt(bayar.value||0);
+  if(metodeBayar === "TUNAI"){
+    let uang=parseInt(bayar.value.replace(/\D/g,'' )||0);
 
-  if(uang<total){
-    showAlert("Uang kurang! Total: "+rupiah(total));
+    if(uang<total){
+      showAlert("Uang kurang! Total: "+rupiah(total));
+      return;
+    }
+
+    uangBayar = uang;
+
+  } else {
+    // QRIS / Debit / Transfer
+    uangBayar = total;
+  }
+
+  bukaPopup();
+}
+
+bayar.addEventListener("input", function(e){
+  let angka = this.value.replace(/\D/g,'');
+  if(!angka){
+    this.value = "";
+    updateKembalian();
     return;
   }
 
-  uangBayar=uang;
-  bukaPopup();
-}
+  this.value = "Rp " + Number(angka).toLocaleString("id-ID");
+  updateKembalian();
+});
 
 // POPUP
 function bukaPopup(){
@@ -872,6 +1178,7 @@ function bukaPopup(){
  popupTotal.innerText = rupiah(total);
  popupBayar.innerText = rupiah(uangBayar);
  popupKembali.innerText = rupiah(uangBayar - total);
+ popupDetail.innerHTML = "<b>Metode: "+metodeBayar+"</b><br><br>" + detail;
 
  popup.style.display = "flex";
 
@@ -901,6 +1208,7 @@ function cetakStrukFinal(){
   if(hpToko)     struk += "  HP: " + hpToko + "\n";
   struk += "================================\n";
   struk += "Kasir : " + kasir + "\n";
+  struk += "Bayar : " + metodeBayar + "\n";
   struk += tgl.innerText + " " + jam.innerText + "\n";
   struk += "--------------------------------\n";
 
@@ -938,9 +1246,12 @@ function cetakStrukFinal(){
     cart = {};
     render();
     loadTotalHarian();
+      loadTotalKasir();   // ✅ TAMBAH DI SINI
 
     bayar.value = "";
     kembalianEl.innerText = "Rp 0";
+
+    pilihMetode('TUNAI','💵 Tunai');
 
     popup.style.display = "none";
     printArea.innerHTML = "";
@@ -967,12 +1278,13 @@ function kirimTransaksi(uang){
  fetch(URL,{
    method:"POST",
    body:JSON.stringify({
-     action:"simpanPenjualan",
-     kasir,
-     tanggal: new Date().toISOString().slice(0,10),
-     jam:jam.innerText,
-     items:JSON.stringify(items)
-   })
+  action:"simpanPenjualan",
+  kasir,
+  metode: metodeBayar,
+  tanggal: new Date().toISOString().slice(0,10),
+  jam:jam.innerText,
+  items:JSON.stringify(items)
+})
  });
 }
 
@@ -1114,12 +1426,409 @@ function simpanSettingToko(){
   tutupSettingToko();
 }
 
+function gantiMetode(){
+  metodeBayar = document.getElementById("metodeBayar").value;
+
+  if(metodeBayar === "TUNAI"){
+    bayar.style.display = "block";
+    kembalianEl.parentElement.style.display = "block";
+  } else {
+    bayar.style.display = "none";
+    kembalianEl.parentElement.style.display = "none";
+    bayar.value = "";
+    kembalianEl.innerText = "Rp 0";
+  }
+}
+
+// ===== PILIH METODE BAYAR BUTTON =====
+document.querySelectorAll(".metodeBtn").forEach(btn=>{
+  btn.onclick = function(){
+    document.querySelectorAll(".metodeBtn").forEach(b=>b.classList.remove("active"));
+    this.classList.add("active");
+
+    metodeBayar = this.dataset.metode;
+
+    if(metodeBayar === "TUNAI"){
+      bayar.style.display = "block";
+      kembalianEl.parentElement.style.display = "block";
+      bayar.focus();
+    } else {
+      bayar.style.display = "none";
+      kembalianEl.parentElement.style.display = "none";
+      bayar.value = "";
+      kembalianEl.innerText = "Rp 0";
+    }
+  }
+});
+
+function toggleMetodeMenu(){
+  const menu = document.getElementById("metodeMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+function pilihMetode(kode, teks){
+  metodeBayar = kode;
+  document.getElementById("metodeBtnUtama").innerText = teks;
+  document.getElementById("metodeMenu").style.display = "none";
+
+  if(kode === "TUNAI"){
+    bayar.style.display = "block";
+    kembalianEl.parentElement.style.display = "block";
+    bayar.focus();
+  } else {
+    bayar.style.display = "none";
+    kembalianEl.parentElement.style.display = "none";
+    bayar.value = "";
+    kembalianEl.innerText = "Rp 0";
+  }
+}
+
+// klik luar menu = tutup
+document.addEventListener("click", function(e){
+  if(!e.target.closest(".metodeWarp")){
+    document.getElementById("metodeMenu").style.display = "none";
+  }
+});
+
+function closingShift(){
+
+  const btn = document.getElementById("btnClosing");
+
+  // 🔥 START LOADING
+  btn.classList.add("btn-loading");
+  btn.innerText = "Memproses...";
+
+  const tanggal = new Date().toISOString().slice(0,10);
+
+  fetch(URL + `?action=closingKasir&kasir=${kasir}&tanggal=${tanggal}`)
+    .then(r=>r.json())
+    .then(res=>{
+
+      fetch(URL + `?action=simpanClosing`
+        + `&tanggal=${res.tanggal}`
+        + `&kasir=${res.kasir}`
+        + `&total_qty=${res.totalQty}`
+        + `&total_penjualan=${res.total}`
+        + `&tunai=${res.byMetode.TUNAI || 0}`
+        + `&qris=${res.byMetode.QRIS || 0}`
+        + `&debit=${res.byMetode.DEBIT || 0}`
+        + `&transfer=${res.byMetode.TRANSFER || 0}`
+      );
+
+      let html = `
+      <b>Kasir :</b> ${res.kasir}<br>
+      <b>Tanggal :</b> ${res.tanggal}<br><br>
+      <b>Total Qty :</b> ${res.totalQty}<br>
+      <b>Total Penjualan :</b> ${rupiah(res.total)}<br><br>
+      `;
+
+      for(let m in res.byMetode){
+        html += `${m} : ${rupiah(res.byMetode[m])}<br>`;
+      }
+
+      closingContent.innerHTML = html;
+      closingPopup.style.display = "flex";
+
+    })
+    .finally(()=>{
+
+      // 🔥 STOP LOADING
+      btn.classList.remove("btn-loading");
+      btn.innerText = "🧾 Closing Shift";
+    });
+}
+
+function tutupClosing(){
+  closingPopup.style.display = "none";
+}
+
+function printClosing(){
+  const isi = closingContent.innerText;
+
+  printArea.innerHTML = `<pre style="font-family:monospace;font-size:12px">${isi}</pre>`;
+  window.print();
+  printArea.innerHTML = "";
+}
+
+function loadTotalKasir(){
+  fetch(URL + "?action=totalHarianByKasir&kasir=" + kasir)
+    .then(r => r.text())
+    .then(t => {
+      document.getElementById("totalKasirHariIni").innerText =
+        "Penjualan Anda Hari Ini: Rp " +
+        Number(t).toLocaleString("id-ID");
+    });
+}
+
+// ===== HOLD / RECALL TRANSAKSI =====
+
+function getHoldData(){
+  return JSON.parse(localStorage.getItem("holdTransaksi") || "[]");
+}
+
+function setHoldData(data){
+  localStorage.setItem("holdTransaksi", JSON.stringify(data));
+}
+
+document.getElementById("btnHold").onclick = function(){
+  if(Object.keys(cart).length === 0){
+    showModal("Info", "Keranjang kosong", [
+  {text:"OK"}
+]);
+    return;
+  }
+
+  let holds = getHoldData();
+  holds.push({
+    waktu: new Date().toLocaleTimeString(),
+    cart: cart
+  });
+
+  setHoldData(holds);
+
+  cart = {};
+  render();
+
+  showModal("Sukses", "Transaksi berhasil ditahan", [
+  {text:"OK"}
+]);
+};
+
+document.getElementById("btnRecall").onclick = function(){
+  let holds = getHoldData();
+
+  if(holds.length === 0){
+    showModal("Info","Tidak ada transaksi ditahan",[
+      {text:"OK"}
+    ]);
+    return;
+  }
+
+  let list = "<div style='max-height:200px;overflow:auto'>";
+  holds.forEach((h,i)=>{
+    list += `<div style="padding:8px;border-bottom:1px solid #eee;cursor:pointer"
+              onclick="ambilHold(${i})">
+              Transaksi ${i+1} - ${h.waktu}
+            </div>`;
+  });
+  list += "</div>";
+
+  showModal("Pilih Transaksi", list, [
+    {text:"Tutup"}
+  ]);
+};
+
+function ambilHold(i){
+  let holds = getHoldData();
+  cart = holds[i].cart;
+  render();
+  holds.splice(i,1);
+  setHoldData(holds);
+  document.getElementById("posModal").style.display="none";
+}
+
+// ===== POS MODAL =====
+function showModal(title, body, actions=[]){
+  const modal = document.getElementById("posModal");
+  document.getElementById("posModalTitle").innerText = title;
+  document.getElementById("posModalBody").innerHTML = body;
+
+  const act = document.getElementById("posModalActions");
+  act.innerHTML = "";
+
+  actions.forEach(a=>{
+    const btn = document.createElement("button");
+    btn.innerText = a.text;
+    btn.onclick = ()=>{
+      modal.style.display="none";
+      a.onClick && a.onClick();
+    };
+    act.appendChild(btn);
+  });
+
+  modal.style.display="flex";
+}
+
+document.getElementById("btnReprint").onclick = function(){
+
+  let tanggal = new Date().toISOString().slice(0,10);
+
+  fetch(URL + "?action=listTransaksiKasir&tanggal="+tanggal+"&kasir="+kasir)
+
+  .then(r=>r.json())
+  .then(list=>{
+
+    if(list.length==0){
+      showModal("Info","Belum ada transaksi hari ini",[ {text:"OK"} ]);
+      return;
+    }
+
+    let html = "<div style='max-height:250px;overflow:auto'>";
+    list.forEach(trx=>{
+      html+=`
+        <div style="padding:8px;border-bottom:1px solid #eee;cursor:pointer"
+             onclick="ambilStruk('${tanggal}','${trx.jam}')">
+          Jam ${trx.jam} — Rp ${trx.total.toLocaleString("id-ID")} — ${trx.metode}
+        </div>
+      `;
+    });
+    html+="</div>";
+
+    showModal("Pilih Transaksi", html, [{text:"Tutup"}]);
+  });
+};
+
+function ambilStruk(tanggal,jam){
+
+  showLoading(true); // 🔥 LOADING TAHAP 2
+
+  fetch(URL + "?action=detailTransaksi&tanggal="+tanggal+"&jam="+jam+"&kasir="+kasir)
+  .then(r=>r.json())
+  .then(items=>{
+
+    showLoading(false); // 🔥 STOP LOADING
+
+    tampilkanStruk(items,tanggal,jam);
+
+  })
+  .catch(()=>{
+
+    showLoading(false);
+    showAlert("Gagal ambil struk","error");
+  });
+}
+
+function tampilkanStruk(items,tanggal,jam){
+  let total=0;
+
+  let html = `<div style="font-family:monospace;font-size:12px">
+  ================================<br>
+  STRUK PENJUALAN<br>
+  ================================<br>
+  ${tanggal} ${jam}<br>
+  --------------------------------<br>`;
+
+  items.forEach(it=>{
+    let subtotal = Number(it.subtotal);
+    total += subtotal;
+
+    html+=`
+      ${it.nama}<br>
+      ${it.qty} x ${rupiah(it.harga)} = ${rupiah(subtotal)}<br><br>
+    `;
+  });
+
+  html+=`
+  --------------------------------<br>
+  <b>TOTAL : ${rupiah(total)}</b><br>
+  ================================<br>
+  </div>`;
+
+  showModal("Cetak Ulang Struk", html, [
+    {text:"Print", onClick:()=>window.print()},
+    {text:"Tutup"}
+  ]);
+}
+
+function showLoading(state){
+  const el = document.getElementById("loadingOverlay");
+
+  if(state){
+    el.style.display = "flex";
+    setTimeout(()=> el.classList.add("show"), 10);
+
+    document.body.classList.add("loading");
+  } else {
+    el.classList.remove("show");
+
+    setTimeout(()=>{
+      el.style.display = "none";
+    }, 200);
+
+    document.body.classList.remove("loading");
+  }
+}
+
+document.getElementById("btnReprint").addEventListener("click", function(){
+  handleReprint(this);
+});
+
+function handleReprint(btn){
+
+  let tanggal = new Date().toISOString().slice(0,10);
+
+  // 🔥 START LOADING BUTTON
+  setButtonLoading(btn, true, "Mencari struk...");
+
+  fetch(URL + "?action=listTransaksiKasir&tanggal="+tanggal+"&kasir="+kasir)
+    .then(r => r.json())
+    .then(list => {
+
+      if(!list || list.length === 0){
+        showModal("Info","Belum ada transaksi hari ini",[ {text:"OK"} ]);
+        return;
+      }
+
+      let html = "<div style='max-height:250px;overflow:auto'>";
+
+      list.forEach(trx=>{
+        html += `
+          <div style="padding:10px;border-bottom:1px solid #eee;cursor:pointer"
+            onclick="ambilStruk('${tanggal}','${trx.jam}')">
+            🕒 ${trx.jam} — Rp ${trx.total.toLocaleString("id-ID")} — ${trx.metode}
+          </div>
+        `;
+      });
+
+      html += "</div>";
+
+      showModal("Pilih Transaksi", html, [{text:"Tutup"}]);
+
+    })
+    .catch(err => {
+      showAlert("Gagal mengambil data","error");
+      console.error(err);
+    })
+    .finally(() => {
+
+      // 🔥 STOP LOADING BUTTON
+      setButtonLoading(btn, false);
+
+    });
+}
+
+
+function setButtonLoading(btn, state, textLoading="Memuat..."){
+  if(state){
+    btn.classList.add("btn-loading");
+    btn.disabled = true;
+    btn.dataset.oldText = btn.innerText;
+    btn.innerText = textLoading;
+  } else {
+    btn.classList.remove("btn-loading");
+    btn.disabled = false;
+    btn.innerText = btn.dataset.oldText || "Tombol";
+  }
+}
+
+const kasirName = document.getElementById("kasirName");
+const tgl = document.getElementById("tgl");
+const jam = document.getElementById("jam");
+
 document.addEventListener("keydown", resetIdle);
 document.addEventListener("mousemove", resetIdle);
 document.addEventListener("click", resetIdle);
 bayar.addEventListener("focus", resetIdle);
 bayar.addEventListener("input", resetIdle);
 </script>
+
+<div id="posModal" class="pos-modal">
+  <div class="pos-modal-box">
+    <div id="posModalTitle" class="pos-modal-title">Info</div>
+    <div id="posModalBody" class="pos-modal-body"></div>
+    <div id="posModalActions" class="pos-modal-actions"></div>
+  </div>
+</div>
 
 <!-- POPUP ALERT MODERN -->
 <div id="alertBox">
@@ -1141,6 +1850,37 @@ bayar.addEventListener("input", resetIdle);
     <button onclick="tutupSettingToko()">❌ Tutup</button>
   </div>
 </div>
+
+<div id="closingPopup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);justify-content:center;align-items:center;z-index:9999">
+  <div style="background:white;padding:20px;border-radius:14px;width:340px;box-shadow:0 10px 30px rgba(0,0,0,.3)">
+    <h3 style="margin-top:0">🧾 Closing Shift</h3>
+
+    <div id="closingContent" style="font-size:14px;line-height:1.6"></div>
+
+    <br>
+    <button onclick="printClosing()">🖨 Cetak</button>
+    <button onclick="tutupClosing()">❌ Tutup</button>
+  </div>
+</div>
+
+<div id="loadingOverlay" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  z-index:99999;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-weight:600;
+  font-size:14px;
+  flex-direction:column;
+  gap:10px;
+">
+  <div class="loader"></div>
+  ⏳ Memuat struk...
+</div>
+
 
 </body>
 </html>
