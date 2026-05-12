@@ -1428,48 +1428,45 @@ function closeCamera(){
 let lastScan = "";
 let scanLock = false;
 
-async function scanBarcode(){
+const canvas = document.createElement("canvas");
+const ctx = canvas.getContext("2d");
 
-  if(!detector || scanLock) {
+async function scanBarcode(){
+  if(!detector) {
     requestAnimationFrame(scanBarcode);
     return;
   }
 
-  try{
-    const video = document.getElementById("video");
-    const barcodes = await detector.detect(video);
+  const video = document.getElementById("video");
 
-    if(barcodes.length > 0){
+  // ambil area tengah saja (fokus ke barcode)
+  const w = video.videoWidth;
+  const h = video.videoHeight;
 
+  const cropW = w * 0.6;
+  const cropH = h * 0.3;
+  const cropX = (w - cropW) / 2;
+  const cropY = (h - cropH) / 2;
+
+  canvas.width = cropW;
+  canvas.height = cropH;
+
+  ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+
+  try {
+    const barcodes = await detector.detect(canvas);
+
+    if(barcodes.length){
       let kode = barcodes[0].rawValue;
-
-      if(kode.length < 8) {
-        requestAnimationFrame(scanBarcode);
-        return;
-      }
-
-      if(kode === lastScan) {
-        requestAnimationFrame(scanBarcode);
-        return;
-      }
-
-      lastScan = kode;
-      scanLock = true;
-
-      beep(); // bunyi
-
-      barcodeBaru.value = kode;
-
-      setTimeout(()=>{
+      if(kode.length >= 8){
+        beep();
+        barcodeBaru.value = kode;
         closeCamera();
         autoDetectBarcode();
-        scanLock = false;
-      }, 250);
-
-      return;
+        return;
+      }
     }
-
-  }catch(e){}
+  } catch(e){}
 
   requestAnimationFrame(scanBarcode);
 }
